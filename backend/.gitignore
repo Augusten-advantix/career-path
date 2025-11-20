@@ -1,0 +1,16 @@
+node_modules/
+dist/
+# .env files are included for organization use
+# .env
+# .env.local
+# .env.production.local
+uploads/*
+!uploads/.gitkeep
+database.sqlite
+*.log
+Documents/
+*.json.bak
+*.db
+*.sqlite3
+.DS_Store
+
