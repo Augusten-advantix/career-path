@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Landing: React.FC = () => {
+    const navigate = useNavigate();
     const [selectedRole, setSelectedRole] = useState<'worker' | 'recruiter' | null>(null);
     const [loading, setLoading] = useState(false);
-
-    const getRedirectUrl = (role: 'worker' | 'recruiter') => {
-        const workerLoginUrl = import.meta.env.VITE_WORKER_LOGIN_URL || 'http://localhost:5173/login';
-        const recruiterLoginUrl = import.meta.env.VITE_RECRUITER_LOGIN_URL || 'http://localhost:5174/login';
-
-        return role === 'worker' ? workerLoginUrl : recruiterLoginUrl;
-    };
 
     const handleRoleSelection = (role: 'worker' | 'recruiter') => {
         setSelectedRole(role);
@@ -17,8 +12,9 @@ const Landing: React.FC = () => {
 
         // Small delay for smooth UX
         setTimeout(() => {
-            const redirectUrl = getRedirectUrl(role);
-            window.location.href = redirectUrl;
+            // Navigate to login page with role type as query param
+            const loginPath = role === 'worker' ? '/login?type=user' : '/login?type=recruiter';
+            navigate(loginPath);
         }, 500);
     };
 
