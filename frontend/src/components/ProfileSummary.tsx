@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Briefcase, GraduationCap, Award, Code } from 'lucide-react';
+import { User, Briefcase, Award, Code } from 'lucide-react';
 
 interface Props {
     classification: any;
@@ -68,8 +68,8 @@ const ProfileSummary: React.FC<Props> = ({ classification }) => {
                     </h4>
                     <div className="flex flex-wrap gap-2">
                         {primarySkills.map((skill: string, idx: number) => (
-                            <span 
-                                key={idx} 
+                            <span
+                                key={idx}
                                 className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-shadow"
                             >
                                 ✨ {skill}

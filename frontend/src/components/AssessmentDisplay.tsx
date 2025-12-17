@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, GaugeCircle, Target, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, GaugeCircle, Target, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface Props {
     assessment: any;
@@ -69,11 +69,10 @@ const AssessmentDisplay: React.FC<Props> = ({ assessment }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Overall Score */}
-                    <div className={`p-8 rounded-xl ${getScoreBackground(competitiveAnalysis.overallScore)} border-2 ${
-                        competitiveAnalysis.overallScore >= 80 ? 'border-green-400' :
-                        competitiveAnalysis.overallScore >= 60 ? 'border-yellow-400' :
-                        'border-red-400'
-                    }`}>
+                    <div className={`p-8 rounded-xl ${getScoreBackground(competitiveAnalysis.overallScore)} border-2 ${competitiveAnalysis.overallScore >= 80 ? 'border-green-400' :
+                            competitiveAnalysis.overallScore >= 60 ? 'border-yellow-400' :
+                                'border-red-400'
+                        }`}>
                         <div className="text-center">
                             <p className="text-sm font-bold uppercase tracking-wide text-slate-600 mb-3">Overall Score</p>
                             <div className={`text-6xl font-bold ${getScoreColor(competitiveAnalysis.overallScore)} mb-3`}>

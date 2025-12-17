@@ -9,7 +9,6 @@ import {
   ArrowRight,
   BarChart3,
   Brain,
-  Briefcase,
   GraduationCap,
   TrendingUp,
   Lightbulb
