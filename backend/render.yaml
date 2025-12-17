@@ -1,0 +1,32 @@
+# Render.com Web Service Configuration
+# See: https://render.com/docs/yaml-spec
+
+services:
+  - type: web
+    name: careerpath-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: careerpath-db
+          property: connectionString
+
+databases:
+  - name: careerpath-db
+    plan: free
+    databaseName: careerpath
+    user: careerpath_user

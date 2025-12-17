@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config(); // Load environment variables FIRST
 
 import express from 'express';
+// Force restart
 import cors from 'cors';
 import { config } from './config/config';
 import sequelize from './config/database';
