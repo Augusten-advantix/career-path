@@ -132,18 +132,22 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
         // Using imported sequelize instance for raw queries
 
         // Delete related records in order of dependencies
+        // 1. roadmap_progress has userId directly
         await sequelize.query(`DELETE FROM "roadmap_progress" WHERE "userId" = :userId`, {
             replacements: { userId: id }
         });
 
-        await sequelize.query(`DELETE FROM "analysis_jobs" WHERE "userId" = :userId`, {
+        // 2. analysis_jobs uses profileId, so delete via profile relationship
+        await sequelize.query(`DELETE FROM "analysis_jobs" WHERE "profileId" IN (SELECT "id" FROM "profiles" WHERE "userId" = :userId)`, {
             replacements: { userId: id }
         });
 
+        // 3. uploads has userId directly
         await sequelize.query(`DELETE FROM "uploads" WHERE "userId" = :userId`, {
             replacements: { userId: id }
         });
 
+        // 4. profiles has userId directly
         await sequelize.query(`DELETE FROM "profiles" WHERE "userId" = :userId`, {
             replacements: { userId: id }
         });
