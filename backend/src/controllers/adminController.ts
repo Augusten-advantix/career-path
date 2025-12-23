@@ -4,6 +4,7 @@ import Profile from '../models/Profile';
 import AnalysisJob from '../models/AnalysisJob';
 import Upload from '../models/Upload';
 import { Op } from 'sequelize';
+import sequelize from '../config/database';
 
 interface AuthRequest extends Request {
     user?: any;
@@ -127,9 +128,31 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
             return res.status(403).json({ message: 'Cannot delete your own account' });
         }
 
+        // Delete all related data first (cascade delete)
+        // Using imported sequelize instance for raw queries
+
+        // Delete related records in order of dependencies
+        await sequelize.query(`DELETE FROM "roadmap_progress" WHERE "userId" = :userId`, {
+            replacements: { userId: id }
+        });
+
+        await sequelize.query(`DELETE FROM "analysis_jobs" WHERE "userId" = :userId`, {
+            replacements: { userId: id }
+        });
+
+        await sequelize.query(`DELETE FROM "uploads" WHERE "userId" = :userId`, {
+            replacements: { userId: id }
+        });
+
+        await sequelize.query(`DELETE FROM "profiles" WHERE "userId" = :userId`, {
+            replacements: { userId: id }
+        });
+
+        // Now delete the user
         await user.destroy();
 
-        res.json({ message: 'User deleted successfully' });
+        console.log(`✅ User ${id} and all related data deleted`);
+        res.json({ message: 'User and all related data deleted successfully' });
     } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).json({ message: 'Server error' });
