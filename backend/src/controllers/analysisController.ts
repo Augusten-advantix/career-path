@@ -3,15 +3,21 @@ import { extractResumeStructure, getClassificationSummary } from '../services/cl
 import { assessProfile } from '../services/assessmentService';
 import { generateEnhancedRoadmap, getRoadmapCostSummary } from '../services/recommendationService';
 import { ModelKey } from '../services/llmProvider';
+import Profile from '../models/Profile';
+
+interface AuthRequest extends Request {
+    user?: any;
+}
 
 /**
  * POST /api/analysis/classify
- * Extract structured data from resume text
+ * Extract structured data from resume text and save profile to database
  */
-export const classifyResume = async (req: Request, res: Response) => {
+export const classifyResume = async (req: AuthRequest, res: Response) => {
     try {
         console.log('🔍 classifyResume called');
         const { resumeText, model } = req.body;
+        const userId = req.user?.id;
 
         if (!resumeText) {
             return res.status(400).json({ message: 'Resume text is required' });
@@ -21,8 +27,39 @@ export const classifyResume = async (req: Request, res: Response) => {
         const classification = await extractResumeStructure(resumeText, model as ModelKey);
         const summary = getClassificationSummary(classification);
 
+        // Save profile to database
+        console.log('💾 Saving profile to database...');
+        const firstExperience = classification.experience?.[0];
+        const technicalSkills = classification.skills?.technical?.map((s: any) => s.name) || [];
+        const softSkills = classification.skills?.soft?.map((s: any) => s.name) || [];
+        const allSkills = [...technicalSkills, ...softSkills];
+
+        const profile = await Profile.create({
+            userId: userId || null,
+            uploadId: null,
+            name: classification.personalInfo?.name || 'Unknown',
+            title: firstExperience?.role || 'Not specified',
+            company: firstExperience?.company || 'N/A',
+            yearsExperience: classification.totalYearsExperience || 0,
+            skills: allSkills,
+            extractedSnippets: {
+                classification: classification,
+                summary: summary,
+            },
+            parseConfidence: 0.9,
+            analysis: null,
+            resumeText: resumeText, // Store for session restoration
+            sessionStage: 'review', // User is at review stage
+        });
+
+        console.log(`✅ Profile saved with ID: ${profile.id}`);
         console.log('✅ Resume classified successfully');
-        res.status(200).json({ classification, summary });
+
+        res.status(200).json({
+            classification,
+            summary,
+            profileId: profile.id,
+        });
     } catch (error) {
         console.error('❌ Error classifying resume:', error);
         res.status(500).json({ message: 'Failed to classify resume' });

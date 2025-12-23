@@ -12,6 +12,23 @@ interface Message {
     timestamp: Date;
 }
 
+// Helper function to render markdown-style formatting in messages
+const formatMessageContent = (content: string): React.ReactNode => {
+    // Split by **bold** and *italic* patterns
+    const parts = content.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+
+    return parts.map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            // Bold text
+            return <strong key={index} className="font-bold">{part.slice(2, -2)}</strong>;
+        } else if (part.startsWith('*') && part.endsWith('*')) {
+            // Italic text
+            return <em key={index} className="italic">{part.slice(1, -1)}</em>;
+        }
+        return part;
+    });
+};
+
 const Conversation: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -25,6 +42,7 @@ const Conversation: React.FC = () => {
     const [availableHoursPerWeek, setAvailableHoursPerWeek] = useState<number>(5);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const resumeText = location.state?.resumeText;
+    const profileId = location.state?.profileId; // Get profileId from ProfileReview
     const model = location.state?.model || localStorage.getItem('selectedModel') || 'gemini-2.0-flash';
 
     const scrollToBottom = () => {
@@ -36,12 +54,110 @@ const Conversation: React.FC = () => {
     }, [messages]);
 
     useEffect(() => {
-        if (!resumeText) {
-            navigate('/');
-            return;
+        console.log('🔍 Conversation component mounted, resumeText:', resumeText ? 'present' : 'missing');
+        console.log('🔍 fromSession:', location.state?.fromSession);
+        console.log('🔍 conversationHistory length:', location.state?.conversationHistory?.length || 0);
+
+        // If we have location.state with resumeText, use it
+        if (resumeText) {
+            // Check if restoring from session with conversation history
+            if (location.state?.fromSession && location.state?.conversationHistory) {
+                let history = location.state.conversationHistory;
+
+                // Parse if it's a string (from JSON storage)
+                if (typeof history === 'string') {
+                    try {
+                        history = JSON.parse(history);
+                    } catch (e) {
+                        console.error('Failed to parse conversation history:', e);
+                        history = [];
+                    }
+                }
+
+                // Validate it's an array with items
+                if (Array.isArray(history) && history.length > 0) {
+                    // Convert timestamp strings back to Date objects
+                    const parsedHistory: Message[] = history.map((msg: any) => ({
+                        ...msg,
+                        timestamp: new Date(msg.timestamp)
+                    }));
+                    console.log('🔄 Restoring conversation from session (via navigation):', parsedHistory.length, 'messages');
+                    setMessages(parsedHistory);
+                    setQuestionCount(Math.ceil(parsedHistory.length / 2));
+                    setIsLoading(false);
+                } else {
+                    console.log('🆕 Invalid or empty history, starting new conversation');
+                    startConversation();
+                }
+            } else {
+                console.log('🆕 Starting new conversation');
+                startConversation();
+            }
+        } else {
+            // No location.state (probably a refresh) - try to fetch session from backend
+            console.log('🔄 No location.state detected, fetching session from backend...');
+            fetchAndRestoreSession();
         }
-        startConversation();
     }, []);
+
+    const fetchAndRestoreSession = async () => {
+        setIsLoading(true);
+        try {
+            const sessionRes = await axios.get(`${config.apiUrl}/session/state`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const session = sessionRes.data;
+            console.log('📥 Fetched session state:', session);
+
+            // Parse conversation history if it's a string
+            let history = session.conversationHistory;
+            if (typeof history === 'string') {
+                try {
+                    history = JSON.parse(history);
+                } catch (e) {
+                    console.error('Failed to parse conversation history:', e);
+                    history = [];
+                }
+            }
+
+            if (session.stage === 'conversation' && Array.isArray(history) && history.length > 0) {
+                // Restore conversation from backend - convert timestamps to Date objects
+                const parsedHistory: Message[] = history.map((msg: any) => ({
+                    ...msg,
+                    timestamp: new Date(msg.timestamp)
+                }));
+                console.log('🔄 Restoring conversation from backend:', parsedHistory.length, 'messages');
+                setMessages(parsedHistory);
+                setQuestionCount(Math.ceil(parsedHistory.length / 2));
+            } else if (session.resumeText) {
+                // Have resumeText but no conversation history - start new conversation
+                console.log('🆕 Have resumeText, starting new conversation');
+                const response = await axios.post(
+                    `${config.apiUrl}/conversation/start`,
+                    { resumeText: session.resumeText, answers: { availableHoursPerWeek }, model },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const aiMessage: Message = {
+                    role: 'assistant',
+                    content: response.data.question,
+                    timestamp: new Date()
+                };
+                setMessages([aiMessage]);
+                setQuestionCount(1);
+            } else {
+                // No useful session data - redirect to roadmap
+                console.log('❌ No session data, redirecting to roadmap');
+                navigate('/roadmap');
+            }
+        } catch (error) {
+            console.error('Error fetching session:', error);
+            navigate('/roadmap');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const startConversation = async () => {
         setIsLoading(true);
@@ -103,12 +219,34 @@ const Conversation: React.FC = () => {
                 };
                 setMessages(prev => [...prev, aiMessage]);
                 setQuestionCount(prev => prev + 1);
+
+                // Save conversation history after each exchange
+                saveConversationProgress([...messages, userMessage, aiMessage]);
             }
         } catch (error) {
             console.error('Error getting next question:', error);
             showToast('error', 'Failed to continue conversation. Please try again.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const saveConversationProgress = async (conversationHistory: Message[]) => {
+        // Save conversation to backend for session restoration
+        try {
+            await axios.post(
+                `${config.apiUrl}/session/state`,
+                {
+                    stage: 'conversation',
+                    profileId,
+                    conversationHistory
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log('💾 Conversation progress saved');
+        } catch (err) {
+            console.error('Failed to save conversation progress:', err);
+            // Don't show error to user - it's a background save
         }
     };
 
@@ -121,7 +259,8 @@ const Conversation: React.FC = () => {
                     resumeText,
                     conversationHistory,
                     answers: { availableHoursPerWeek },
-                    model
+                    model,
+                    profileId // Pass profileId to backend
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -211,7 +350,7 @@ const Conversation: React.FC = () => {
                                             <span className="text-xs font-bold text-blue-600">🤖 Coach</span>
                                         </div>
                                     )}
-                                    <p className="text-sm leading-relaxed font-semibold">{msg.content}</p>
+                                    <p className="text-sm leading-relaxed font-medium">{formatMessageContent(msg.content)}</p>
                                     <p className={`text-xs mt-2 ${msg.role === 'user' ? 'text-blue-100' : 'text-slate-600'}`}>
                                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>

@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { config } from '../config';
-import { Calendar, Clock, CheckCircle, ArrowRight, AlertTriangle, Sparkles, LayoutDashboard, Map, LogOut, User, Home, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, ArrowRight, Sparkles, LayoutDashboard, Map, LogOut, User, Home, ChevronRight } from 'lucide-react';
 import ProfileSummary from '../components/ProfileSummary';
 import AssessmentDisplay from '../components/AssessmentDisplay';
 
@@ -127,23 +127,82 @@ const Roadmap: React.FC = () => {
 
     if (!analysis) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
-                <div className="text-center bg-gradient-to-br from-slate-800 to-slate-900 p-12 rounded-2xl shadow-2xl max-w-md w-full border border-slate-700">
-                    <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <AlertTriangle className="w-10 h-10 text-white" />
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+                {/* Header */}
+                <header className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-10">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-16">
+                            <Link to="/" className="flex items-center gap-2">
+                                <img src="/colorlogo.png" alt="CareerPath Logo" className="w-10 h-10" />
+                                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">CareerPath AI</span>
+                            </Link>
+                            <div className="flex items-center gap-3">
+                                <div className="hidden sm:flex items-center gap-2 text-sm text-slate-300 bg-slate-700/50 px-4 py-2 rounded-full border border-slate-600">
+                                    <User className="w-4 h-4" />
+                                    <span>{user?.email}</span>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                                    title="Logout"
+                                >
+                                    <LogOut className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <h2 className="text-3xl font-bold text-white mb-2">No Roadmap Found</h2>
-                    <p className="text-slate-300 mb-8">
-                        We couldn't find an existing roadmap for you. Let's create one!
-                    </p>
-                    <Link
-                        to="/home"
-                        className="inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all font-semibold"
-                    >
-                        Start New Analysis
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                </div>
+                </header>
+
+                {/* Welcome Content */}
+                <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+                    <div className="text-center mb-12">
+                        <img src="/colorlogo.png" alt="CareerPath Logo" className="w-24 h-24 mx-auto mb-6 drop-shadow-2xl" />
+                        <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+                            Welcome to <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">CareerPath AI</span>
+                        </h1>
+                        <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto">
+                            Your personalized AI-powered career roadmap is just a few clicks away. Let's discover your potential together!
+                        </p>
+                    </div>
+
+                    {/* Features Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 text-center">
+                            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                <ArrowRight className="w-6 h-6 text-blue-400" />
+                            </div>
+                            <h3 className="text-white font-semibold mb-2">Upload Resume</h3>
+                            <p className="text-slate-400 text-sm">Share your resume and we'll analyze your skills and experience</p>
+                        </div>
+                        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 text-center">
+                            <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                <Sparkles className="w-6 h-6 text-purple-400" />
+                            </div>
+                            <h3 className="text-white font-semibold mb-2">AI Analysis</h3>
+                            <p className="text-slate-400 text-sm">Our AI identifies gaps and opportunities for your career growth</p>
+                        </div>
+                        <div className="bg-slate-800/50 backdrop-blur border border-slate-700/50 rounded-2xl p-6 text-center">
+                            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                <Map className="w-6 h-6 text-emerald-400" />
+                            </div>
+                            <h3 className="text-white font-semibold mb-2">Get Roadmap</h3>
+                            <p className="text-slate-400 text-sm">Receive a personalized step-by-step career roadmap</p>
+                        </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="text-center">
+                        <Link
+                            to="/home"
+                            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-lg font-semibold rounded-xl hover:shadow-2xl hover:shadow-blue-500/40 transition-all transform hover:scale-105"
+                        >
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Start Your Career Analysis
+                            <ArrowRight className="w-5 h-5 ml-2" />
+                        </Link>
+                        <p className="text-slate-500 text-sm mt-4">Takes less than 5 minutes · 100% Free · No credit card required</p>
+                    </div>
+                </main>
             </div>
         );
     }

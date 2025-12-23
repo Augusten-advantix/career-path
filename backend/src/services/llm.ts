@@ -69,6 +69,7 @@ ROADMAP RULES:
 - NO course/platform recommendations - just topics to learn
 - NO project recommendations
 - Each step should explain WHAT to learn, not WHERE
+- **CRITICAL: Create EXACTLY ONE roadmap step for EACH skill gap identified in the assessment.gaps array. The number of steps MUST equal the number of gaps.**
 
 **ROLE-SPECIFIC AI TOPICS**:
 
@@ -380,6 +381,46 @@ Return JSON with the following structure (return only JSON, no extra text):
           }
           return step;
         });
+
+        // Ensure the number of steps equals the number of gaps
+        const gaps = Array.isArray(parsed.assessment?.gaps) ? parsed.assessment.gaps : [];
+        const gapCount = gaps.length;
+        const stepCount = parsed.roadmap.steps.length;
+
+        if (gapCount > 0 && stepCount !== gapCount) {
+          console.warn(`⚠️ Gap/Step mismatch: ${gapCount} gaps but ${stepCount} steps. Adjusting...`);
+
+          if (stepCount < gapCount) {
+            // Not enough steps - create additional steps for missing gaps
+            const existingStepTitles = new Set(parsed.roadmap.steps.map((s: any) => s.title?.toLowerCase() || ''));
+            for (let i = stepCount; i < gapCount; i++) {
+              const gap = gaps[i];
+              if (!existingStepTitles.has(gap.toLowerCase())) {
+                parsed.roadmap.steps.push({
+                  id: `step-${i + 1}`,
+                  title: gap,
+                  description: `Develop skills in: ${gap}`,
+                  goal: `Gain proficiency in ${gap}`,
+                  category: 'Learning',
+                  priority: 3,
+                  estimatedHours: 8,
+                  timeframeWeeks: 2,
+                  aiSkillFocus: gap,
+                  subSteps: [],
+                  prerequisites: [],
+                  completionCriteria: [`Demonstrate understanding of ${gap}`],
+                  keyConceptsToMaster: [gap],
+                  commonMistakes: [],
+                  milestone: { title: gap, checkpoints: [`Complete ${gap} learning`] }
+                });
+              }
+            }
+          } else if (stepCount > gapCount && gapCount > 0) {
+            // Too many steps - trim to match gap count
+            parsed.roadmap.steps = parsed.roadmap.steps.slice(0, gapCount);
+          }
+          console.log(`✅ Adjusted to ${parsed.roadmap.steps.length} steps for ${gapCount} gaps`);
+        }
       }
     } catch (e) {
       console.warn('⚠️ Post-processing of roadmap failed:', e);

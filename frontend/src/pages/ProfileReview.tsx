@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -36,23 +36,36 @@ const ProfileReview: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { token } = useAuth();
+    const hasAnalyzed = useRef(false); // Prevent double API calls from StrictMode
 
     const [text, setText] = useState('');
     const [filename, setFilename] = useState('');
     const [model, setModel] = useState<string>('');
+    const [profileId, setProfileId] = useState<number | null>(null);
     const [classification, setClassification] = useState<ClassificationData | null>(null);
     const [loading, setLoading] = useState(true);
     const [showRawText, setShowRawText] = useState(false);
 
     useEffect(() => {
-        if (location.state?.text) {
+        // Check if restoring from session (already has classification)
+        if (location.state?.fromSession && location.state?.classification) {
+            hasAnalyzed.current = true;
+            setText(location.state.text);
+            setClassification(location.state.classification);
+            setProfileId(location.state.profileId);
+            setLoading(false);
+            return;
+        }
+
+        if (location.state?.text && !hasAnalyzed.current) {
+            hasAnalyzed.current = true; // Mark as analyzed to prevent re-run
             setText(location.state.text);
             setFilename(location.state.filename || 'Uploaded Resume');
             const selectedModel = location.state.model || localStorage.getItem('selectedModel') || 'gemini-1.5-flash';
             setModel(selectedModel);
             analyzeResume(location.state.text, selectedModel);
-        } else {
-            navigate('/');
+        } else if (!location.state?.text) {
+            navigate('/roadmap');
         }
     }, [location.state, navigate]);
 
@@ -65,6 +78,7 @@ const ProfileReview: React.FC = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setClassification(response.data.classification);
+            setProfileId(response.data.profileId); // Store the profileId
         } catch (err) {
             console.error('Error classifying resume:', err);
             // Fallback to raw text view if analysis fails
@@ -74,12 +88,24 @@ const ProfileReview: React.FC = () => {
         }
     };
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
+        // Update session stage to 'conversation' before navigating
+        try {
+            await axios.post(
+                `${config.apiUrl}/session/state`,
+                { stage: 'conversation', profileId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+        } catch (err) {
+            console.error('Failed to update session state:', err);
+        }
+
         navigate('/conversation', {
             state: {
                 resumeText: text,
                 resumePath: location.state?.filename,
-                model: model
+                model: model,
+                profileId: profileId // Pass profileId to Conversation
             }
         });
     };

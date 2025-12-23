@@ -8,6 +8,8 @@ import { config } from './config/config';
 import sequelize from './config/database';
 import authRoutes from './routes/auth';
 import apiRoutes from './routes/api';
+import adminRoutes from './routes/admin';
+import sessionRoutes from './routes/session';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,6 +31,17 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/session', sessionRoutes);
+
+// Health check endpoint for Render
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
 
 app.get('/', (req, res) => {
     res.send('Career Roadmap API is running');

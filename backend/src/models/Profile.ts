@@ -4,7 +4,8 @@ import Upload from './Upload';
 
 class Profile extends Model {
     public id!: number;
-    public uploadId!: number;
+    public userId?: number | null;
+    public uploadId?: number | null;
     public name!: string;
     public title!: string;
     public company!: string;
@@ -13,6 +14,9 @@ class Profile extends Model {
     public extractedSnippets!: any; // JSON
     public parseConfidence!: number;
     public analysis!: any; // JSON (stores the LLM result)
+    public sessionStage?: string | null; // 'upload' | 'review' | 'conversation' | 'complete'
+    public resumeText?: string | null; // Raw resume text for session restoration
+    public conversationHistory?: any; // JSON array of conversation messages
 }
 
 Profile.init(
@@ -22,9 +26,13 @@ Profile.init(
             autoIncrement: true,
             primaryKey: true,
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
         uploadId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: Upload,
                 key: 'id',
@@ -59,6 +67,19 @@ Profile.init(
             allowNull: true,
         },
         analysis: {
+            type: DataTypes.JSON,
+            allowNull: true,
+        },
+        sessionStage: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: 'review',
+        },
+        resumeText: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        conversationHistory: {
             type: DataTypes.JSON,
             allowNull: true,
         },

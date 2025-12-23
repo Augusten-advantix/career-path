@@ -18,7 +18,7 @@ const Register: React.FC = () => {
         try {
             const response = await axios.post(`${config.apiUrl}/auth/register`, { email, password, name });
             login(response.data.token, response.data.user);
-            navigate('/');
+            navigate('/roadmap'); // New users go to roadmap to see welcome page
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
         }

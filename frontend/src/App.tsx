@@ -11,10 +11,23 @@ import Roadmap from './pages/Roadmap';
 import StepDetail from './pages/StepDetail';
 import ProfileReview from './pages/ProfileReview';
 import Conversation from './pages/Conversation';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import ProfileManagement from './pages/admin/ProfileManagement';
+import AnalysisJobMonitoring from './pages/admin/AnalysisJobMonitoring';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+};
+
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isAdmin } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/admin/login" />;
+  if (!isAdmin) return <Navigate to="/admin/login" />;
+  return <>{children}</>;
 };
 
 const App: React.FC = () => {
@@ -55,6 +68,33 @@ const App: React.FC = () => {
               <PrivateRoute>
                 <StepDetail />
               </PrivateRoute>
+            } />
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } />
+            <Route path="/admin/users" element={
+              <AdminRoute>
+                <UserManagement />
+              </AdminRoute>
+            } />
+            <Route path="/admin/profiles" element={
+              <AdminRoute>
+                <ProfileManagement />
+              </AdminRoute>
+            } />
+            <Route path="/admin/jobs" element={
+              <AdminRoute>
+                <AnalysisJobMonitoring />
+              </AdminRoute>
+            } />
+            <Route path="/admin/analytics" element={
+              <AdminRoute>
+                <AdminAnalytics />
+              </AdminRoute>
             } />
           </Routes>
         </Router>

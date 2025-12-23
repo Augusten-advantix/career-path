@@ -7,6 +7,8 @@ class User extends Model {
     public email!: string;
     public password!: string;
     public name!: string;
+    public isAdmin!: boolean;
+    public role!: 'user' | 'admin';
 
     public async validatePassword(password: string): Promise<boolean> {
         return bcrypt.compare(password, this.password);
@@ -35,6 +37,16 @@ User.init(
         name: {
             type: DataTypes.STRING,
             allowNull: true,
+        },
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        role: {
+            type: DataTypes.ENUM('user', 'admin'),
+            allowNull: false,
+            defaultValue: 'user',
         },
     },
     {

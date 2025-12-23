@@ -3,7 +3,8 @@ import sequelize from '../config/database';
 
 class Upload extends Model {
     public id!: number;
-    public recruiterId!: number;
+    public userId?: number | null; // NEW: Link to User who uploaded
+    public recruiterId!: number; // Keep for backward compatibility
     public filename!: string;
     public path!: string;
     public fileType!: string;
@@ -18,6 +19,10 @@ Upload.init(
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+        },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: true, // Nullable for existing data
         },
         recruiterId: {
             type: DataTypes.INTEGER,

@@ -1,7 +1,8 @@
 /**
- * Unified LLM Provider - Supports Official Gemini API, OpenRouter, and NVIDIA API
+ * Unified LLM Provider - Supports Official Gemini API, OpenRouter, NVIDIA API, and Mistral API
  * - 'gemini' model uses Official Gemini API (GEMINI_API_KEY)
- * - 'deepseek-v3.1' uses NVIDIA API (NVIDIA_API_KEY)
+ * - 'deepseek-v3.1', 'qwen3-80b' use NVIDIA API (NVIDIA_API_KEY)
+ * - Mistral models use Mistral API (MISTRAL_API_KEY)
  * - All other models use OpenRouter (OPENROUTER_API_KEY)
  */
 
@@ -82,6 +83,31 @@ export const AVAILABLE_MODELS = {
         provider: 'NVIDIA',
         isOfficial: false,
         isNvidia: true
+    },
+    // Mistral API models (use MISTRAL_API_KEY)
+    'mistral-small': {
+        id: 'mistral-small-latest',
+        name: 'Mistral Small 3.2 (Free)',
+        provider: 'Mistral AI',
+        isOfficial: false,
+        isNvidia: false,
+        isMistral: true
+    },
+    'ministral-8b': {
+        id: 'ministral-8b-latest',
+        name: 'Ministral 8B (Free)',
+        provider: 'Mistral AI',
+        isOfficial: false,
+        isNvidia: false,
+        isMistral: true
+    },
+    'ministral-3b': {
+        id: 'ministral-3b-latest',
+        name: 'Ministral 3B (Free)',
+        provider: 'Mistral AI',
+        isOfficial: false,
+        isNvidia: false,
+        isMistral: true
     }
 } as const;
 
@@ -95,6 +121,9 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // NVIDIA API configuration
 const NVIDIA_API_URL = 'https://integrate.api.nvidia.com/v1';
+
+// Mistral API configuration
+const MISTRAL_API_URL = 'https://api.mistral.ai/v1';
 
 /**
  * Generate content using Official Gemini API
@@ -183,6 +212,69 @@ async function generateWithNvidia(
     }
 
     throw lastError || new Error('Max retries reached for NVIDIA API');
+}
+
+/**
+ * Generate content using Mistral API
+ * Uses OpenAI SDK with Mistral base URL
+ */
+async function generateWithMistral(
+    prompt: string,
+    modelId: string,
+    modelName: string,
+    retries: number = 3
+): Promise<string> {
+    const apiKey = process.env.MISTRAL_API_KEY;
+
+    if (!apiKey) {
+        throw new Error('MISTRAL_API_KEY is not set in environment variables');
+    }
+
+    // Debug: Show key info for verification
+    console.log(`🔑 MISTRAL_API_KEY loaded: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)} (length: ${apiKey.length})`);
+    console.log(`🤖 Using Mistral API: ${modelName} (${modelId})`);
+
+    const openai = new OpenAI({
+        apiKey: apiKey,
+        baseURL: MISTRAL_API_URL,
+    });
+
+    let lastError: Error | null = null;
+    let delay = 2000;
+
+    for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+            const completion = await openai.chat.completions.create({
+                model: modelId,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 8192,
+            });
+
+            const content = completion.choices[0]?.message?.content;
+            if (content) {
+                console.log(`✅ Mistral response received (${content.length} chars)`);
+                return content;
+            }
+
+            throw new Error('Invalid response structure from Mistral API');
+        } catch (error: any) {
+            lastError = error;
+
+            // Check for rate limiting
+            if (error.status === 429) {
+                console.warn(`⚠️ Mistral Rate limit hit (429). Retrying in ${delay}ms... (Attempt ${attempt + 1}/${retries})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2;
+                continue;
+            }
+
+            console.error('❌ Mistral API error:', error.message || error);
+            throw error;
+        }
+    }
+
+    throw lastError || new Error('Max retries reached for Mistral API');
 }
 
 /**
@@ -287,9 +379,14 @@ export async function generateContent(
         return generateWithGemini(prompt);
     }
 
-    // Use NVIDIA API for DeepSeek v3.1
+    // Use NVIDIA API for DeepSeek v3.1 and Qwen3
     if ('isNvidia' in selectedModel && selectedModel.isNvidia) {
         return generateWithNvidia(prompt, selectedModel.id, selectedModel.name, retries);
+    }
+
+    // Use Mistral API for Mistral models
+    if ('isMistral' in selectedModel && selectedModel.isMistral) {
+        return generateWithMistral(prompt, selectedModel.id, selectedModel.name, retries);
     }
 
     // Use OpenRouter for all other models

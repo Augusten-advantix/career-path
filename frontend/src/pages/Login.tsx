@@ -19,20 +19,54 @@ const Login: React.FC = () => {
             const { token: authToken, user } = response.data;
             login(authToken, user);
 
+            // Check user's session state for smart redirection
             try {
-                const roadmapCheck = await axios.get(`${config.apiUrl}/roadmap/latest`, {
+                const sessionRes = await axios.get(`${config.apiUrl}/session/state`, {
                     headers: { Authorization: `Bearer ${authToken}` }
                 });
 
-                if (roadmapCheck.data) {
+                const session = sessionRes.data;
+                console.log('📍 Session state:', session);
+
+                if (session.hasRoadmap) {
+                    // User has completed roadmap
                     navigate('/roadmap');
                     return;
                 }
-            } catch (roadmapError) {
-                console.log('No existing roadmap');
+
+                if (session.stage === 'review' && session.resumeText && session.classification) {
+                    // User was in profile review - restore their session
+                    navigate('/review', {
+                        state: {
+                            text: session.resumeText,
+                            classification: session.classification,
+                            profileId: session.profileId,
+                            fromSession: true
+                        }
+                    });
+                    return;
+                }
+
+                if (session.stage === 'conversation' && session.resumeText) {
+                    // User was in conversation - restore their session
+                    navigate('/conversation', {
+                        state: {
+                            resumeText: session.resumeText,
+                            classification: session.classification,
+                            profileId: session.profileId,
+                            conversationHistory: session.conversationHistory || [],
+                            fromSession: true
+                        }
+                    });
+                    return;
+                }
+
+            } catch (sessionError) {
+                console.log('No session state found');
             }
 
-            navigate('/home');
+            // Default: go to roadmap (will show welcome page if no roadmap)
+            navigate('/roadmap');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         }

@@ -1,32 +1,35 @@
-node_modules/
-dist/
-*.log
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production
+dist
+build
+
+# Misc
 .DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+ts-debug.log*
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/src/config/.env
+
+# Database
 *.sqlite
-database.sqlite
+*.db
 
-
-
-in worker loging career path ai my manager says the roadmap look good but its not the actual career developmant roadmap it is a bunch of recomendation and not all persons can came with all skills like mastering python, networking, cloud they are humans not ai
-
-
-INSTRUCTIONS:
-1. Identify the SINGLE most important skill gap between current state and target role.
-2. Create a detailed learning path for THAT ONE skill first.
-3. Each step must be highly detailed with:
-   - WHAT: Exactly what to learn/do (specific topics, not vague areas)
-   - WHY: How this directly helps achieve the target role
-   - HOW: Step-by-step approach (e.g., "Start with Chapter 1-3 of X book, then practice with Y exercise...")
-   - SUCCESS CRITERIA: How to know when you've completed this step
-   - COMMON PITFALLS: What mistakes to avoid
-4. Steps should be small enough to complete in 1-2 weeks with part-time effort.
-5. Include practical exercises and mini-projects, not just "learn X".
-6. After the primary skill path, add 1-2 secondary skills as "Phase 2" for later.
-
-
-CRITICAL PRINCIPLES:
-1. **ONE SKILL AT A TIME**: Humans cannot learn Python, networking, cloud, and databases simultaneously. Focus on ONE primary skill path that leads to the target role. Other skills are "nice to have" for later.
-2. **REALISTIC TIMELINES**: A working professional has limited time. Each step should be achievable in the stated timeframe with 5-10 hours/week of effort.
-3. **DEPTH OVER BREADTH**: It's better to be genuinely competent in 2-3 skills than superficially aware of 10 skills.
-4. **SEQUENTIAL PROGRESSION**: Each step MUST build on the previous one. No jumping to advanced topics without prerequisites.
-5. **PRACTICAL PROFICIENCY, NOT MASTERY**: The goal is "can do the job effectively" not "world-class expert".
+# OS
+Thumbs.db

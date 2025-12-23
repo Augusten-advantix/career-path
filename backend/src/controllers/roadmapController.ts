@@ -3,12 +3,14 @@ import { analyzeProfile, updateProfileWithCode } from '../services/llm';
 import { parseDocument } from '../services/parser';
 import path from 'path';
 import RoadmapProgress from '../models/RoadmapProgress';
+import AnalysisJob from '../models/AnalysisJob';
+import Profile from '../models/Profile';
 import { ModelKey } from '../services/llmProvider';
 
 export const analyzeCareerPath = async (req: Request, res: Response) => {
     try {
         console.log('🚀 analyzeCareerPath called');
-        const { answers, resumePath, resumeText: providedText, model } = req.body;
+        const { answers, resumePath, resumeText: providedText, model, profileId } = req.body;
 
         console.log('📋 Request body:', {
             hasAnswers: !!answers,
@@ -16,7 +18,8 @@ export const analyzeCareerPath = async (req: Request, res: Response) => {
             resumePath: resumePath,
             hasResumeText: !!providedText,
             resumeTextLength: providedText ? providedText.length : 0,
-            model: model || 'default'
+            model: model || 'default',
+            profileId: profileId
         });
 
         let resumeText = providedText;
@@ -36,9 +39,31 @@ export const analyzeCareerPath = async (req: Request, res: Response) => {
             console.log('✅ Using provided resume text, length:', resumeText.length);
         }
 
+        // Create AnalysisJob with status 'running'
+        let analysisJob = null;
+        if (profileId) {
+            console.log('💾 Creating analysis job for profile:', profileId);
+            analysisJob = await AnalysisJob.create({
+                profileId: profileId,
+                status: 'running',
+                result: null,
+                error: null,
+            });
+            console.log(`✅ Analysis job created with ID: ${analysisJob.id}`);
+        }
+
         console.log('🤖 Calling analyzeProfile with model:', model || 'default');
         const analysis = await analyzeProfile(resumeText, answers, model as ModelKey);
         console.log('✅ Analysis completed successfully');
+
+        // Update AnalysisJob status to 'success'
+        if (analysisJob) {
+            await analysisJob.update({
+                status: 'success',
+                result: analysis,
+            });
+            console.log('✅ Analysis job updated to success');
+        }
 
         // Save to Database
         // @ts-ignore - req.user is added by auth middleware
@@ -64,6 +89,27 @@ export const analyzeCareerPath = async (req: Request, res: Response) => {
         console.log('✅ Response sent to client');
     } catch (error) {
         console.error('❌ Error analyzing profile:', error);
+
+        // Update AnalysisJob status to 'failed' if it exists
+        const { profileId } = req.body;
+        if (profileId) {
+            try {
+                const failedJob = await AnalysisJob.findOne({
+                    where: { profileId, status: 'running' },
+                    order: [['createdAt', 'DESC']]
+                });
+                if (failedJob) {
+                    await failedJob.update({
+                        status: 'failed',
+                        error: error instanceof Error ? error.message : 'Unknown error',
+                    });
+                    console.log('✅ Analysis job marked as failed');
+                }
+            } catch (updateError) {
+                console.error('❌ Failed to update job status:', updateError);
+            }
+        }
+
         if (error instanceof Error) {
             console.error('Error message:', error.message);
             console.error('Error stack:', error.stack);
