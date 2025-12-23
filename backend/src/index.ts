@@ -47,8 +47,10 @@ app.get('/', (req, res) => {
     res.send('Career Roadmap API is running');
 });
 
-sequelize.sync().then(() => {
-    console.log('Database synced');
+// Sync database - use alter: true in production to add missing columns
+const isProduction = process.env.NODE_ENV === 'production';
+sequelize.sync({ alter: isProduction }).then(() => {
+    console.log(`Database synced${isProduction ? ' (with alter)' : ''}`);
     app.listen(config.port, () => {
         console.log(`Server is running on port ${config.port}`);
     });
