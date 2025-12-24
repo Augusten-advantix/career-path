@@ -38,7 +38,7 @@ const Conversation: React.FC = () => {
     const [userInput, setUserInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
-    const [questionCount, setQuestionCount] = useState(0);
+    const [_questionCount, setQuestionCount] = useState(0); // Used by backend, not shown in UI
     const [availableHoursPerWeek] = useState<number>(5); // Hidden from UI but used in backend
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const resumeText = location.state?.resumeText;
