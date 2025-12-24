@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { config } from '../config';
-import { Send, Sparkles, CheckCircle } from 'lucide-react';
+import { Send, Sparkles } from 'lucide-react';
 import { useToast } from '../components/ToastContext';
 
 interface Message {
@@ -39,7 +39,7 @@ const Conversation: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
     const [questionCount, setQuestionCount] = useState(0);
-    const [availableHoursPerWeek, setAvailableHoursPerWeek] = useState<number>(5);
+    const [availableHoursPerWeek] = useState<number>(5); // Hidden from UI but used in backend
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const resumeText = location.state?.resumeText;
     const profileId = location.state?.profileId; // Get profileId from ProfileReview
@@ -109,6 +109,13 @@ const Conversation: React.FC = () => {
 
             const session = sessionRes.data;
             console.log('📥 Fetched session state:', session);
+            console.log('📊 Session details:', {
+                stage: session.stage,
+                hasResumeText: !!session.resumeText,
+                hasHistory: !!session.conversationHistory,
+                historyLength: session.conversationHistory?.length || 0,
+                profileId: session.profileId
+            });
 
             // Parse conversation history if it's a string
             let history = session.conversationHistory;
@@ -148,7 +155,8 @@ const Conversation: React.FC = () => {
                 setQuestionCount(1);
             } else {
                 // No useful session data - redirect to roadmap
-                console.log('❌ No session data, redirecting to roadmap');
+                console.warn('⚠️ No session data - stage:', session.stage, 'resumeText:', !!session.resumeText, 'history:', history?.length || 0);
+                console.log('❌ Redirecting to roadmap');
                 navigate('/roadmap');
             }
         } catch (error) {
@@ -239,6 +247,7 @@ const Conversation: React.FC = () => {
                 {
                     stage: 'conversation',
                     profileId,
+                    resumeText,  // Include resumeText for session restoration
                     conversationHistory
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -282,56 +291,27 @@ const Conversation: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-2 sm:p-4">
-            <div className="max-w-4xl mx-auto flex flex-col h-screen max-h-screen">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-t-3xl shadow-2xl p-4 sm:p-6 border-b-4 border-blue-500">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-                        <div className="flex-1">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                                <Sparkles className="w-8 h-8" />
-                                AI Career Coach
-                            </h1>
-                            <p className="text-blue-100 text-sm mt-2 font-semibold">
-                                Let's discuss your career goals and aspirations
-                            </p>
+        <div className="min-h-screen bg-[#050505] flex flex-col">
+            {/* Sticky Header */}
+            <div className="sticky top-0 z-10 bg-[#050505]/95 backdrop-blur-xl border-b border-white/5">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="w-5 h-5 text-indigo-400" />
                         </div>
-                        <div className="flex items-center gap-3 sm:gap-6">
-                            <div className="text-right">
-                                <div className="text-3xl sm:text-4xl font-bold text-white">{questionCount}</div>
-                                <div className="text-xs text-blue-100 font-bold">Questions</div>
-                            </div>
-                            <div className="flex items-center gap-2 sm:gap-3">
-                                <label className="text-xs text-blue-100 font-bold">Hours/week</label>
-                                <input
-                                    type="number"
-                                    min={1}
-                                    max={40}
-                                    step={1}
-                                    value={availableHoursPerWeek}
-                                    onChange={(e) => setAvailableHoursPerWeek(Number(e.target.value))}
-                                    className="w-16 px-2 py-1 rounded-md text-black font-semibold"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="mt-6">
-                            <div className="w-full bg-blue-400 rounded-full h-3">
-                                <div
-                                    className="bg-gradient-to-r from-emerald-400 to-emerald-500 h-3 rounded-full transition-all duration-500"
-                                    style={{ width: `${Math.min((questionCount / 7) * 100, 100)}%` }}
-                                />
-                            </div>
-                            <p className="text-xs text-blue-100 mt-2 font-semibold">
-                                {isComplete ? '✅ Complete! Generating your roadmap...' : '⏳ Typically 5-7 questions'}
-                            </p>
+                        <div>
+                            <h1 className="text-xl font-semibold text-white tracking-tight">AI Career Coach</h1>
+                            <p className="text-sm text-slate-400">Let's discuss your career goals and aspirations</p>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Main Container */}
+            <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col p-2 sm:p-4">{/* Header removed - using sticky header above */}
 
                 {/* Messages Area */}
-                <div className="bg-gradient-to-br from-white to-slate-50 shadow-lg p-3 sm:p-6 flex-1 overflow-y-auto border-x-2 border-slate-200">
+                <div className="bg-[#0A0A0A] border-x border-white/5 shadow-lg p-3 sm:p-5 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20">
                     <div className="space-y-4">
                         {messages.map((msg, idx) => (
                             <div
@@ -339,19 +319,19 @@ const Conversation: React.FC = () => {
                                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-[90%] sm:max-w-[80%] rounded-3xl px-4 sm:px-5 py-3 sm:py-4 ${msg.role === 'user'
-                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
-                                        : 'bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900 shadow-md'
+                                    className={`max-w-[90%] sm:max-w-[80%] rounded-lg px-4 sm:px-4 py-3 sm:py-3 ${msg.role === 'user'
+                                        ? 'bg-indigo-500/10 border border-indigo-500/20 text-slate-200'
+                                        : 'bg-white/5 border border-white/10 text-slate-300'
                                         }`}
                                 >
                                     {msg.role === 'assistant' && (
                                         <div className="flex items-center gap-2 mb-2">
-                                            <Sparkles className="w-4 h-4 text-blue-600" />
-                                            <span className="text-xs font-bold text-blue-600">🤖 Coach</span>
+                                            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                                            <span className="text-xs font-medium text-indigo-400">Coach</span>
                                         </div>
                                     )}
-                                    <p className="text-sm leading-relaxed font-medium">{formatMessageContent(msg.content)}</p>
-                                    <p className={`text-xs mt-2 ${msg.role === 'user' ? 'text-blue-100' : 'text-slate-600'}`}>
+                                    <p className="text-sm leading-relaxed">{formatMessageContent(msg.content)}</p>
+                                    <p className={`text-xs mt-2 ${msg.role === 'user' ? 'text-slate-500' : 'text-slate-600'}`}>
                                         {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </div>
@@ -360,14 +340,14 @@ const Conversation: React.FC = () => {
 
                         {isLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl px-5 py-4 shadow-md">
+                                <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-3">
                                     <div className="flex items-center gap-2">
                                         <div className="flex gap-1">
-                                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                            <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                         </div>
-                                        <span className="text-xs text-slate-700 font-bold">Thinking...</span>
+                                        <span className="text-xs text-slate-400 font-medium">Thinking...</span>
                                     </div>
                                 </div>
                             </div>
@@ -375,11 +355,18 @@ const Conversation: React.FC = () => {
 
                         {isComplete && (
                             <div className="flex justify-center mt-4">
-                                <div className="bg-gradient-to-r from-emerald-100 to-emerald-200 border-2 border-emerald-400 rounded-3xl px-6 py-5 flex items-center gap-3 shadow-lg">
-                                    <CheckCircle className="w-7 h-7 text-emerald-600" />
+                                <div className="bg-indigo-950/20 border border-indigo-500/20 rounded-lg px-6 py-4 flex items-center gap-4">
+                                    {/* Animated spinner */}
+                                    <div className="relative">
+                                        <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-400 rounded-full animate-spin"></div>
+                                        <div className="absolute inset-0 w-8 h-8 border-2 border-transparent border-t-indigo-400/50 rounded-full animate-spin" style={{ animationDuration: '0.8s' }}></div>
+                                    </div>
                                     <div>
-                                        <p className="font-bold text-emerald-900">✅ Conversation Complete!</p>
-                                        <p className="text-sm text-emerald-700 font-semibold">Generating your personalized roadmap...</p>
+                                        <p className="font-semibold text-indigo-400 text-sm flex items-center gap-2">
+                                            <span className="inline-block animate-pulse">✨</span>
+                                            Generating Your Roadmap
+                                        </p>
+                                        <p className="text-xs text-slate-500 mt-1">Analyzing your profile and creating a personalized plan...</p>
                                     </div>
                                 </div>
                             </div>
@@ -391,27 +378,27 @@ const Conversation: React.FC = () => {
 
                 {/* Input Area */}
                 {!isComplete && (
-                    <div className="bg-white rounded-b-3xl shadow-2xl p-5 border-t-4 border-slate-200">
+                    <div className="bg-[#0A0A0A] border border-white/10 rounded-b-xl shadow-lg p-4">
                         <div className="flex gap-3">
                             <textarea
                                 value={userInput}
                                 onChange={(e) => setUserInput(e.target.value)}
                                 onKeyPress={handleKeyPress}
                                 placeholder="Type your answer here..."
-                                className="flex-1 px-3 sm:px-5 py-2 sm:py-3 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none font-semibold text-slate-900 bg-slate-50 text-sm sm:text-base"
+                                className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 resize-none text-slate-200 placeholder-slate-500 text-sm sm:text-base"
                                 rows={2}
                                 disabled={isLoading}
                             />
                             <button
                                 onClick={handleSendMessage}
                                 disabled={isLoading || !userInput.trim()}
-                                className="px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl hover:shadow-lg hover:shadow-blue-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-bold text-sm sm:text-base"
+                                className="px-4 sm:px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium text-sm sm:text-base border border-indigo-500/50"
                             >
-                                <Send className="w-5 h-5" />
+                                <Send className="w-4 h-4" />
                                 Send
                             </button>
                         </div>
-                        <p className="text-xs text-slate-600 mt-2 font-semibold">Press Enter to send, Shift+Enter for new line</p>
+                        <p className="text-xs text-slate-500 mt-2 font-medium">Press Enter to send, Shift+Enter for new line</p>
                     </div>
                 )}
             </div>

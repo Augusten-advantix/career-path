@@ -128,12 +128,12 @@ const AdminDashboard: React.FC = () => {
                 {/* Welcome Section */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Welcome back 👋</h1>
-                        <p className="text-slate-400 mt-1">Here's what's happening with your platform today</p>
+                        <h1 className="text-2xl font-semibold text-white tracking-tight">Welcome back</h1>
+                        <p className="text-slate-400 mt-1 text-sm">Here's what's happening with your platform today</p>
                     </div>
                     <button
                         onClick={fetchStats}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 rounded-lg transition-all text-sm font-medium"
                     >
                         <RefreshCw className="w-4 h-4" />
                         Refresh
@@ -148,7 +148,7 @@ const AdminDashboard: React.FC = () => {
                             <Link
                                 key={idx}
                                 to={card.link}
-                                className="group bg-slate-900/50 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-all hover:bg-slate-800/50"
+                                className="group bg-[#0A0A0A] border border-white/5 rounded-lg p-4 hover:border-white/10 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className={`p-2.5 rounded-lg ${card.bgColor}`}>
@@ -174,7 +174,7 @@ const AdminDashboard: React.FC = () => {
                 {/* Job Status + Recent Activity */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Job Status Breakdown */}
-                    <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-4 shadow-lg shadow-black/20">
                         <h2 className="text-lg font-semibold text-white mb-4">Job Status</h2>
                         <div className="space-y-3">
                             <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
@@ -209,7 +209,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
 
                     {/* Recent Activity */}
-                    <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+                    <div className="lg:col-span-2 bg-[#0A0A0A] border border-white/5 rounded-lg p-4 shadow-lg shadow-black/20">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-semibold text-white">Recent Activity</h2>
                             <Link to="/admin/jobs" className="text-xs text-indigo-400 hover:text-indigo-300">
@@ -226,8 +226,8 @@ const AdminDashboard: React.FC = () => {
                                 {stats.recentActivity.slice(0, 5).map((activity: any) => (
                                     <div key={activity.id} className="flex items-center gap-4 p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition-colors">
                                         <div className={`w-9 h-9 rounded-full flex items-center justify-center ${activity.status === 'success' ? 'bg-emerald-500/20' :
-                                                activity.status === 'failed' ? 'bg-red-500/20' :
-                                                    activity.status === 'running' ? 'bg-blue-500/20' : 'bg-slate-500/20'
+                                            activity.status === 'failed' ? 'bg-red-500/20' :
+                                                activity.status === 'running' ? 'bg-blue-500/20' : 'bg-slate-500/20'
                                             }`}>
                                             {activity.status === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> :
                                                 activity.status === 'failed' ? <XCircle className="w-4 h-4 text-red-400" /> :
@@ -242,8 +242,8 @@ const AdminDashboard: React.FC = () => {
                                             </p>
                                         </div>
                                         <span className={`text-xs px-2 py-1 rounded-full font-medium ${activity.status === 'success' ? 'bg-emerald-500/10 text-emerald-400' :
-                                                activity.status === 'failed' ? 'bg-red-500/10 text-red-400' :
-                                                    'bg-blue-500/10 text-blue-400'
+                                            activity.status === 'failed' ? 'bg-red-500/10 text-red-400' :
+                                                'bg-blue-500/10 text-blue-400'
                                             }`}>
                                             {activity.status}
                                         </span>
@@ -255,7 +255,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl p-5">
+                <div className="bg-indigo-950/20 border border-indigo-500/20 rounded-lg p-5">
                     <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
                     <div className="flex flex-wrap gap-3">
                         <Link to="/admin/analytics" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">

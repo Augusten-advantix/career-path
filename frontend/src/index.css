@@ -3,6 +3,33 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Custom Scrollbar Styles */
+@layer utilities {
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .scrollbar-thumb-white\/10::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    .scrollbar-thumb-white\/10:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .scrollbar-track-transparent::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    /* Firefox */
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+}
+
 /* Admin Login Page */
 .admin-login-page {
     min-height: 100vh;
@@ -291,8 +318,9 @@
 
 .page-header h2 {
     color: white;
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
 }
 
 .header-actions {
@@ -457,23 +485,23 @@
 .search-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     color: white;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
 }
 
 .search-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .search-input:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* Filter Tabs */
@@ -486,32 +514,35 @@
 
 .filter-tab {
     padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    color: white;
+    color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     text-transform: capitalize;
+    font-size: 0.875rem;
 }
 
 .filter-tab:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
 }
 
 .filter-tab.active {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: rgba(99, 102, 241, 1);
 }
 
 /* Table */
 .table-container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
+    background: #0A0A0A;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
     overflow: hidden;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .admin-table {
@@ -520,32 +551,33 @@
 }
 
 .admin-table thead {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .admin-table th {
-    padding: 1rem;
+    padding: 0.875rem 1rem;
     text-align: left;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 600;
-    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.admin-table td {
-    padding: 1rem;
-    color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.admin-table td {
+    padding: 0.875rem 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-size: 0.875rem;
+}
+
 .admin-table tbody tr {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .admin-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .actions {

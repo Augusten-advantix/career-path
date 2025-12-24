@@ -112,16 +112,16 @@ const ProfileReview: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col items-center justify-center p-4">
-                <div className="bg-gradient-to-br from-white to-slate-50 p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-2xl max-w-md w-full text-center border border-slate-200">
-                    <div className="relative w-20 h-20 mx-auto mb-6">
-                        <div className="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
-                        <div className="relative bg-gradient-to-r from-blue-600 to-blue-800 rounded-full p-5 text-white">
-                            <Sparkles className="w-10 h-10 animate-pulse" />
+            <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-4">
+                <div className="bg-[#0A0A0A] border border-white/10 rounded-xl p-8 max-w-md w-full text-center">
+                    <div className="relative w-16 h-16 mx-auto mb-6">
+                        <div className="absolute inset-0 bg-indigo-500/10 rounded-full animate-ping"></div>
+                        <div className="relative bg-indigo-500/10 border border-indigo-500/20 rounded-full p-4 flex items-center justify-center">
+                            <Sparkles className="w-8 h-8 text-indigo-400 animate-pulse" />
                         </div>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent mb-2">Analyzing Your Profile</h2>
-                    <p className="text-slate-700 font-semibold">
+                    <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">Analyzing Your Profile</h2>
+                    <p className="text-slate-400 text-sm">
                         Our AI is extracting your skills, experience, and qualifications...
                     </p>
                 </div>
@@ -130,31 +130,31 @@ const ProfileReview: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4 sm:p-6 md:p-8">
+        <div className="min-h-screen bg-[#050505] p-4 sm:p-6 md:p-8">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
-                <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-8 mb-6 sm:mb-8">
+                <div className="bg-[#0A0A0A] border border-white/10 rounded-xl shadow-lg p-6 sm:p-8 mb-6 sm:mb-8">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-slate-900 to-blue-900 bg-clip-text text-transparent flex items-center gap-2 sm:gap-3 mb-2">
-                                <FileText className="text-blue-600 w-8 h-8 sm:w-10 sm:h-10" />
+                            <h1 className="text-2xl sm:text-3xl font-semibold text-white flex items-center gap-2 sm:gap-3 mb-2 tracking-tight">
+                                <FileText className="text-indigo-400 w-7 h-7 sm:w-8 sm:h-8" />
                                 Profile Analysis
                             </h1>
-                            <p className="text-slate-700 mt-2 font-semibold text-sm sm:text-base">
-                                We've extracted the following from <strong className="text-blue-600 break-all">{filename}</strong>
+                            <p className="text-slate-400 mt-2 text-sm sm:text-base">
+                                We've extracted the following from <strong className="text-indigo-400 break-all">{filename}</strong>
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                             <button
                                 onClick={() => setShowRawText(!showRawText)}
-                                className="px-4 sm:px-6 py-2 sm:py-3 text-slate-700 font-bold hover:bg-slate-100 rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-2 bg-slate-50 border border-slate-200 text-sm sm:text-base"
+                                className="px-4 sm:px-6 py-2 sm:py-3 text-slate-300 font-medium hover:bg-white/10 rounded-lg transition-all flex items-center justify-center gap-2 bg-white/5 border border-white/10 text-sm sm:text-base"
                             >
                                 <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                 {showRawText ? 'Hide Raw' : 'View Raw'}
                             </button>
                             <button
                                 onClick={handleContinue}
-                                className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-2 font-bold text-sm sm:text-base"
+                                className="px-4 sm:px-6 py-2 sm:py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-all flex items-center justify-center gap-2 font-medium text-sm sm:text-base border border-indigo-500/50"
                             >
                                 Continue
                                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -164,64 +164,69 @@ const ProfileReview: React.FC = () => {
                 </div>
 
                 {showRawText ? (
-                    <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-8 mb-6 sm:mb-8 animate-fade-in">
-                        <h3 className="font-bold text-slate-900 mb-4 text-lg sm:text-xl">📝 Raw Extracted Text</h3>
+                    <div className="bg-[#0A0A0A] border border-white/10 rounded-xl p-6 sm:p-8 mb-6 sm:mb-8">
+                        <h3 className="font-semibold text-white mb-4 text-base flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-slate-400" />
+                            Raw Extracted Text
+                        </h3>
                         <textarea
                             value={text}
                             onChange={(e) => setText(e.target.value)}
-                            className="w-full h-96 p-4 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm bg-slate-50 text-slate-900"
+                            className="w-full h-96 p-4 border border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 font-mono text-sm bg-white/5 text-slate-200 placeholder-slate-500"
                         />
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                         {/* Personal Info & Summary */}
-                        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-lg border border-slate-200 p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl text-blue-600">
-                                    <User className="w-6 h-6" />
+                        <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                                    <User className="w-4 h-4 text-indigo-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900">👤 Personal Details</h3>
+                                <h3 className="text-base font-semibold text-white">Personal Details</h3>
                             </div>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs font-bold text-blue-600 uppercase">Name</label>
-                                        <p className="font-bold text-slate-900 text-lg">{classification?.personalInfo.name || 'Not found'}</p>
+                                        <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Name</label>
+                                        <p className="font-medium text-slate-200 text-base mt-1">{classification?.personalInfo.name || 'Not found'}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-bold text-blue-600 uppercase">Location</label>
-                                        <p className="font-bold text-slate-900 text-lg">{classification?.personalInfo.location || 'Not found'}</p>
+                                        <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Location</label>
+                                        <p className="font-medium text-slate-200 text-base mt-1">{classification?.personalInfo.location || 'Not found'}</p>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-bold text-blue-600 uppercase">Level</label>
-                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-700 capitalize">
-                                            {classification?.experienceLevel || 'Unknown'}
-                                        </span>
+                                        <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Level</label>
+                                        <div className="mt-1">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 capitalize">
+                                                {classification?.experienceLevel || 'Unknown'}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-bold text-blue-600 uppercase">Experience</label>
-                                        <p className="font-bold text-slate-900 text-lg">{classification?.totalYearsExperience} yrs</p>
+                                        <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Experience</label>
+                                        <p className="font-medium text-slate-200 text-base mt-1">{classification?.totalYearsExperience} yrs</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Skills */}
-                        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-lg border border-slate-200 p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl text-purple-600">
-                                    <Code className="w-6 h-6" />
+                        <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                                    <Code className="w-4 h-4 text-purple-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900">💻 Top Skills</h3>
+                                <h3 className="text-base font-semibold text-white">Top Skills</h3>
                             </div>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-1.5">
                                 {classification?.skills.technical.slice(0, 8).map((skill, idx) => (
-                                    <span key={idx} className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-200 text-purple-700 rounded-full text-sm font-bold border border-purple-300">
+                                    <span key={idx} className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded text-xs font-medium border border-purple-500/20">
                                         {skill.name}
                                     </span>
                                 ))}
                                 {classification?.skills.soft.slice(0, 4).map((skill, idx) => (
-                                    <span key={idx} className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 rounded-full text-sm font-bold border border-blue-300">
+                                    <span key={idx} className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded text-xs font-medium border border-blue-500/20">
                                         {skill.name}
                                     </span>
                                 ))}
@@ -229,49 +234,49 @@ const ProfileReview: React.FC = () => {
                         </div>
 
                         {/* Experience */}
-                        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-lg border border-slate-200 p-6 md:col-span-2">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl text-orange-600">
-                                    <Briefcase className="w-6 h-6" />
+                        <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5 md:col-span-2">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="p-2 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                                    <Briefcase className="w-4 h-4 text-orange-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900">💼 Work Experience</h3>
+                                <h3 className="text-base font-semibold text-white">Work Experience</h3>
                             </div>
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 {classification?.experience.map((exp, idx) => (
-                                    <div key={idx} className="flex gap-4 pb-6 border-b border-slate-200 last:border-0 last:pb-0">
-                                        <div className="mt-1">
-                                            <CheckCircle className="w-6 h-6 text-emerald-500" />
+                                    <div key={idx} className="flex gap-3 pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                                        <div className="mt-0.5">
+                                            <CheckCircle className="w-5 h-5 text-emerald-400" />
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-slate-900 text-lg">{exp.role}</h4>
-                                            <p className="text-slate-700 font-semibold">{exp.company}</p>
-                                            <p className="text-sm text-slate-600 mt-1">{exp.duration}</p>
+                                            <h4 className="font-semibold text-slate-200 text-base">{exp.role}</h4>
+                                            <p className="text-slate-400 text-sm">{exp.company}</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">{exp.duration}</p>
                                         </div>
                                     </div>
                                 ))}
                                 {(!classification?.experience || classification.experience.length === 0) && (
-                                    <p className="text-slate-600 italic">No experience found</p>
+                                    <p className="text-slate-500 italic text-sm">No experience found</p>
                                 )}
                             </div>
                         </div>
 
                         {/* Education */}
-                        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-lg border border-slate-200 p-6">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl text-pink-600">
-                                    <GraduationCap className="w-6 h-6" />
+                        <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5 md:col-span-2">
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="p-2 bg-pink-500/10 border border-pink-500/20 rounded-lg">
+                                    <GraduationCap className="w-4 h-4 text-pink-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900">🎓 Education</h3>
+                                <h3 className="text-base font-semibold text-white">Education</h3>
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {classification?.education.map((edu, idx) => (
                                     <div key={idx}>
-                                        <h4 className="font-bold text-slate-900 text-lg">{edu.institution}</h4>
-                                        <p className="text-slate-700 font-semibold">{edu.degree}</p>
+                                        <h4 className="font-semibold text-slate-200 text-base">{edu.institution}</h4>
+                                        <p className="text-slate-400 text-sm">{edu.degree}</p>
                                     </div>
                                 ))}
                                 {(!classification?.education || classification.education.length === 0) && (
-                                    <p className="text-slate-600 italic">No education found</p>
+                                    <p className="text-slate-500 italic text-sm">No education found</p>
                                 )}
                             </div>
                         </div>

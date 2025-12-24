@@ -49,50 +49,60 @@ const AdminLogin: React.FC = () => {
     };
 
     return (
-        <div className="admin-login-page">
-            <div className="admin-login-container">
-                <div className="admin-login-header">
-                    <h1>🎯 Admin Panel</h1>
-                    <p>Sign in to access the administration dashboard</p>
+        <div className="flex items-center justify-center min-h-screen bg-[#050505] p-4 sm:p-6">
+            <div className="w-full max-w-md px-6 sm:px-8 py-8 sm:py-10 text-left bg-[#0A0A0A] border border-white/10 shadow-lg rounded-xl">
+                <div className="mb-6 sm:mb-8">
+                    <h3 className="text-3xl sm:text-4xl font-bold text-center text-white mb-2">Admin Panel</h3>
+                    <p className="text-center text-slate-400 text-sm">Sign in to access the administration dashboard</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="admin-login-form">
-                    {error && <div className="error-alert">{error}</div>}
+                <form onSubmit={handleSubmit}>
+                    <div className="space-y-4 sm:space-y-6">
+                        {error && <p className="text-red-400 text-xs sm:text-sm font-medium bg-red-950/20 border border-red-500/20 p-2.5 sm:p-3 rounded-lg break-words">{error}</p>}
 
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            placeholder="admin@example.com"
-                            autoComplete="email"
-                        />
+                        <div>
+                            <label className="block font-medium text-slate-300 mb-2 text-sm sm:text-base" htmlFor="email">Email</label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                placeholder="admin@example.com"
+                                autoComplete="email"
+                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm sm:text-base text-slate-200 placeholder-slate-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-medium text-slate-300 mb-2 text-sm sm:text-base" htmlFor="password">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                placeholder="••••••••"
+                                autoComplete="current-password"
+                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-200 placeholder-slate-500"
+                            />
+                        </div>
+
+                        <div className="pt-2 sm:pt-4">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 mt-2 text-white font-medium bg-indigo-500 hover:bg-indigo-600 rounded-lg transition-all text-base sm:text-lg border border-indigo-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {loading ? 'Signing in...' : 'Sign In'}
+                            </button>
+                        </div>
+
+                        <div className="text-center">
+                            <a href="/" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors text-sm">← Back to main site</a>
+                        </div>
                     </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            placeholder="••••••••"
-                            autoComplete="current-password"
-                        />
-                    </div>
-
-                    <button type="submit" className="admin-login-btn" disabled={loading}>
-                        {loading ? 'Signing in...' : 'Sign In'}
-                    </button>
                 </form>
-
-                <div className="admin-login-footer">
-                    <a href="/" className="back-link">← Back to main site</a>
-                </div>
             </div>
         </div>
     );

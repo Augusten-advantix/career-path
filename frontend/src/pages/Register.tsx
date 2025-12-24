@@ -25,35 +25,35 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4 sm:p-6">
-            <div className="w-full max-w-md px-6 sm:px-8 py-8 sm:py-10 text-left bg-gradient-to-br from-white to-slate-50 shadow-2xl rounded-2xl sm:rounded-3xl border-2 border-slate-200">
-                <h3 className="text-3xl sm:text-4xl font-bold text-center bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-6 sm:mb-8">Sign Up</h3>
+        <div className="flex items-center justify-center min-h-screen bg-[#050505] p-4 sm:p-6">
+            <div className="w-full max-w-md px-6 sm:px-8 py-8 sm:py-10 text-left bg-[#0A0A0A] border border-white/10 shadow-lg rounded-xl">
+                <h3 className="text-3xl sm:text-4xl font-bold text-center text-white mb-6 sm:mb-8">Sign Up</h3>
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-4 sm:space-y-6">
                         <div>
-                            <label className="block font-bold text-slate-700 mb-2 text-sm sm:text-base" htmlFor="name">👤 Full Name</label>
+                            <label className="block font-medium text-slate-300 mb-2 text-sm sm:text-base" htmlFor="name">Full Name</label>
                             <input type="text" placeholder="John Doe"
-                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base"
+                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm sm:text-base text-slate-200 placeholder-slate-500"
                                 value={name} onChange={(e) => setName(e.target.value)} />
                         </div>
                         <div>
-                            <label className="block font-bold text-slate-700 mb-2 text-sm sm:text-base" htmlFor="email">📧 Email</label>
+                            <label className="block font-medium text-slate-300 mb-2 text-sm sm:text-base" htmlFor="email">Email</label>
                             <input type="email" placeholder="your@email.com"
-                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base"
+                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm sm:text-base text-slate-200 placeholder-slate-500"
                                 value={email} onChange={(e) => setEmail(e.target.value)} required />
                         </div>
                         <div>
-                            <label className="block font-bold text-slate-700 mb-2 text-sm sm:text-base">🔐 Password</label>
+                            <label className="block font-medium text-slate-300 mb-2 text-sm sm:text-base">Password</label>
                             <input type="password" placeholder="••••••••"
-                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-slate-200 rounded-lg sm:rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm sm:text-base"
+                                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm sm:text-base text-slate-200 placeholder-slate-500"
                                 value={password} onChange={(e) => setPassword(e.target.value)} required />
                         </div>
-                        {error && <p className="text-red-600 text-xs sm:text-sm font-semibold bg-red-100 p-2.5 sm:p-3 rounded-lg break-words">❌ {error}</p>}
+                        {error && <p className="text-red-400 text-xs sm:text-sm font-medium bg-red-950/20 border border-red-500/20 p-2.5 sm:p-3 rounded-lg break-words">{error}</p>}
                         <div className="pt-2 sm:pt-4">
-                            <button className="w-full px-4 sm:px-6 py-2.5 sm:py-3 mt-2 text-white font-bold bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg sm:rounded-xl hover:shadow-lg hover:shadow-blue-500/50 transition-all text-base sm:text-lg">Create Account</button>
+                            <button className="w-full px-4 sm:px-6 py-2.5 sm:py-3 mt-2 text-white font-medium bg-indigo-500 hover:bg-indigo-600 rounded-lg transition-all text-base sm:text-lg border border-indigo-500/50">Create Account</button>
                         </div>
                         <div className="text-center">
-                            <p className="text-slate-600 text-sm sm:text-base">Already have an account? <Link to="/login" className="font-bold text-blue-600 hover:text-blue-700 transition-colors">Sign in</Link></p>
+                            <p className="text-slate-400 text-sm sm:text-base">Already have an account? <Link to="/login" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Sign in</Link></p>
                         </div>
                     </div>
                 </form>

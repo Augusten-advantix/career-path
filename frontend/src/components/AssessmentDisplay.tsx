@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, GaugeCircle, Target, CheckCircle, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, GaugeCircle, Target, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
 interface Props {
     assessment: any;
@@ -11,15 +11,15 @@ const AssessmentDisplay: React.FC<Props> = ({ assessment }) => {
     }
 
     const getScoreColor = (score: number): string => {
-        if (score >= 80) return 'text-green-600';
-        if (score >= 60) return 'text-yellow-600';
-        return 'text-red-600';
+        if (score >= 80) return 'text-emerald-400';
+        if (score >= 60) return 'text-yellow-400';
+        return 'text-rose-400';
     };
 
-    const getScoreBackground = (score: number): string => {
-        if (score >= 80) return 'bg-green-100';
-        if (score >= 60) return 'bg-yellow-100';
-        return 'bg-red-100';
+    const getScoreBorder = (score: number): string => {
+        if (score >= 80) return 'border-emerald-500/20';
+        if (score >= 60) return 'border-yellow-500/20';
+        return 'border-rose-500/20';
     };
 
     const competitiveAnalysis = assessment.competitiveAnalysis || {
@@ -38,61 +38,62 @@ const AssessmentDisplay: React.FC<Props> = ({ assessment }) => {
     return (
         <div className="space-y-6">
             {/* Target Role & Level - Header Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white overflow-hidden relative">
-                    <div className="absolute top-0 right-0 opacity-10 transform translate-x-8 -translate-y-8">
-                        <Target className="w-32 h-32" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="group rounded-xl border border-white/10 bg-[#0A0A0A] p-5 transition-all hover:bg-white/[0.02]">
+                    <div className="mb-2.5 flex items-center justify-between">
+                        <p className="text-xs font-medium uppercase tracking-wider text-indigo-400">Target Role</p>
+                        <Target className="h-4 w-4 text-indigo-400/70" />
                     </div>
-                    <p className="text-sm font-semibold opacity-90 uppercase tracking-widest mb-2">Target Role</p>
-                    <h3 className="text-4xl font-bold">{targetRole}</h3>
-                    <p className="text-purple-100 mt-3 text-sm">Your career destination</p>
+                    <h3 className="text-xl font-semibold text-white mb-1">{targetRole}</h3>
+                    <p className="text-sm text-slate-500">Your calculated career destination</p>
                 </div>
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-8 text-white overflow-hidden relative">
-                    <div className="absolute top-0 right-0 opacity-10 transform translate-x-8 -translate-y-8">
-                        <CheckCircle className="w-32 h-32" />
+
+                <div className="group rounded-xl border border-white/10 bg-[#0A0A0A] p-5 transition-all hover:bg-white/[0.02]">
+                    <div className="mb-2.5 flex items-center justify-between">
+                        <p className="text-xs font-medium uppercase tracking-wider text-emerald-400">Current Level</p>
+                        <CheckCircle className="h-4 w-4 text-emerald-400/70" />
                     </div>
-                    <p className="text-sm font-semibold opacity-90 uppercase tracking-widest mb-2">Current Level</p>
-                    <h3 className="text-4xl font-bold">{currentLevel}</h3>
-                    <p className="text-blue-100 mt-3 text-sm">Your experience tier</p>
+                    <h3 className="text-xl font-semibold text-white mb-1">{currentLevel}</h3>
+                    <p className="text-sm text-slate-500">Your assessed experience tier</p>
                 </div>
             </div>
 
             {/* Competitive Analysis */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl shadow-lg p-8 border border-slate-200">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-1 flex items-center">
-                    <div className="p-2.5 bg-blue-600 rounded-lg mr-3">
-                        <GaugeCircle className="w-6 h-6 text-white" />
+            <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-5">
+                <div className="mb-5 flex items-center gap-2.5 border-b border-white/5 pb-4">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                        <GaugeCircle className="h-4 w-4 text-slate-300" />
                     </div>
-                    Competitive Analysis
-                </h2>
-                <p className="text-slate-600 mb-6">Your market position and readiness</p>
+                    <div>
+                        <h2 className="text-base font-semibold text-white">Competitive Analysis</h2>
+                        <p className="text-xs text-slate-500">Market position & readiness assessment</p>
+                    </div>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Overall Score */}
-                    <div className={`p-8 rounded-xl ${getScoreBackground(competitiveAnalysis.overallScore)} border-2 ${competitiveAnalysis.overallScore >= 80 ? 'border-green-400' :
-                            competitiveAnalysis.overallScore >= 60 ? 'border-yellow-400' :
-                                'border-red-400'
-                        }`}>
+                    <div className={`rounded-lg border bg-white/[0.02] p-5 ${getScoreBorder(competitiveAnalysis.overallScore)}`}>
                         <div className="text-center">
-                            <p className="text-sm font-bold uppercase tracking-wide text-slate-600 mb-3">Overall Score</p>
-                            <div className={`text-6xl font-bold ${getScoreColor(competitiveAnalysis.overallScore)} mb-3`}>
+                            <p className="mb-2.5 text-xs font-medium uppercase tracking-wider text-slate-500">Overall Score</p>
+                            <div className={`mb-1 text-4xl font-bold tracking-tight ${getScoreColor(competitiveAnalysis.overallScore)}`}>
                                 {competitiveAnalysis.overallScore}%
                             </div>
-                            <p className="text-sm font-semibold text-slate-700">
+                            <p className="text-sm font-medium text-slate-500">
                                 {competitiveAnalysis.comparedToPeers}
                             </p>
                         </div>
                     </div>
 
                     {/* Market Readiness */}
-                    <div className="p-8 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl border-2 border-blue-400">
+                    <div className="rounded-lg border border-blue-500/20 bg-blue-500/[0.02] p-5">
                         <div className="text-center">
-                            <p className="text-sm font-bold uppercase tracking-wide text-blue-900 mb-3">Market Readiness</p>
-                            <div className="text-6xl font-bold text-blue-600 mb-3">
+                            <p className="mb-2.5 text-xs font-medium uppercase tracking-wider text-blue-400/80">Market Readiness</p>
+                            <div className="mb-2.5 text-4xl font-bold tracking-tight text-blue-400">
                                 {competitiveAnalysis.marketReadiness}%
                             </div>
-                            <div className="flex items-center justify-center text-sm font-semibold text-blue-800 bg-white rounded-lg p-3">
-                                ⏱️ {competitiveAnalysis.estimatedTimeToTarget}
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-2.5 py-1 text-[11px] font-medium text-blue-300">
+                                <Clock className="h-3 w-3" />
+                                {competitiveAnalysis.estimatedTimeToTarget} to target
                             </div>
                         </div>
                     </div>
@@ -100,51 +101,43 @@ const AssessmentDisplay: React.FC<Props> = ({ assessment }) => {
             </div>
 
             {/* Strengths and Weaknesses Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Strengths */}
-                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl shadow-lg p-8 border border-emerald-200">
-                    <h3 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center">
-                        <div className="p-2 bg-emerald-500 rounded-lg mr-3">
-                            <TrendingUp className="w-5 h-5 text-white" />
-                        </div>
+                <div className="rounded-xl border border-emerald-500/20 bg-[#0A0A0A] p-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-emerald-500/90">
+                        <TrendingUp className="h-4 w-4" />
                         Strengths ({strengths.length})
                     </h3>
-                    <div className="space-y-3">
+                    <div className="flex flex-col gap-2">
                         {strengths.length > 0 ? (
                             strengths.map((strength: any, idx: number) => (
-                                <div key={idx} className="p-4 bg-white rounded-xl border-l-4 border-emerald-500 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex items-start">
-                                        <span className="text-emerald-600 font-bold mr-3">✓</span>
-                                        <p className="font-semibold text-slate-800">{strength}</p>
-                                    </div>
+                                <div key={idx} className="flex items-start gap-3 rounded-lg border border-emerald-500/10 bg-emerald-500/[0.03] p-3">
+                                    <CheckCircle className="mt-0.5 h-3.5 w-3.5 text-emerald-500/70 flex-shrink-0" />
+                                    <p className="text-sm text-slate-300 leading-snug">{strength}</p>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-slate-600 text-center py-4">No strengths listed</p>
+                            <p className="text-center py-4 text-sm text-slate-500">No strengths listed</p>
                         )}
                     </div>
                 </div>
 
                 {/* Weaknesses */}
-                <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl shadow-lg p-8 border border-rose-200">
-                    <h3 className="text-2xl font-bold text-rose-900 mb-6 flex items-center">
-                        <div className="p-2 bg-rose-500 rounded-lg mr-3">
-                            <TrendingDown className="w-5 h-5 text-white" />
-                        </div>
+                <div className="rounded-xl border border-rose-500/20 bg-[#0A0A0A] p-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-rose-500/90">
+                        <TrendingDown className="h-4 w-4" />
                         Areas for Improvement ({weaknesses.length})
                     </h3>
-                    <div className="space-y-3">
+                    <div className="flex flex-col gap-2">
                         {weaknesses.length > 0 ? (
                             weaknesses.map((weakness: any, idx: number) => (
-                                <div key={idx} className="p-4 bg-white rounded-xl border-l-4 border-rose-500 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="flex items-start">
-                                        <span className="text-rose-600 font-bold mr-3">!</span>
-                                        <p className="font-semibold text-slate-800">{weakness}</p>
-                                    </div>
+                                <div key={idx} className="flex items-start gap-3 rounded-lg border border-rose-500/10 bg-rose-500/[0.03] p-3">
+                                    <div className="mt-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-rose-500/20 text-[10px] font-bold text-rose-500 flex-shrink-0">!</div>
+                                    <p className="text-sm text-slate-300 leading-snug">{weakness}</p>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-slate-600 text-center py-4">No weaknesses listed</p>
+                            <p className="text-center py-4 text-sm text-slate-500">No weaknesses listed</p>
                         )}
                     </div>
                 </div>
@@ -152,20 +145,16 @@ const AssessmentDisplay: React.FC<Props> = ({ assessment }) => {
 
             {/* Skill Gaps */}
             {gaps.length > 0 && (
-                <div className="bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl shadow-lg p-8 border border-amber-200">
-                    <h3 className="text-2xl font-bold text-amber-900 mb-6 flex items-center">
-                        <div className="p-2 bg-amber-500 rounded-lg mr-3">
-                            <AlertCircle className="w-5 h-5 text-white" />
-                        </div>
-                        Skill Gaps to Address ({gaps.length})
+                <div className="rounded-xl border border-amber-500/20 bg-[#0A0A0A] p-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-amber-500/90">
+                        <AlertCircle className="h-4 w-4" />
+                        Skill Gaps ({gaps.length})
                     </h3>
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {gaps.map((gap: any, idx: number) => (
-                            <div key={idx} className="p-4 bg-white rounded-xl border-l-4 border-amber-500 shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-start">
-                                    <span className="text-amber-600 font-bold mr-3">→</span>
-                                    <p className="font-semibold text-slate-800">{gap}</p>
-                                </div>
+                            <div key={idx} className="flex items-center gap-3 rounded-lg border border-amber-500/10 bg-amber-500/[0.03] p-3">
+                                <div className="h-1.5 w-1.5 rounded-full bg-amber-500/70 flex-shrink-0"></div>
+                                <p className="text-sm text-slate-300 leading-snug">{gap}</p>
                             </div>
                         ))}
                     </div>

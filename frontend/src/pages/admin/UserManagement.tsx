@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config';
+import { Search } from 'lucide-react';
 
 interface User {
     id: number;
@@ -21,7 +22,8 @@ const UserManagement: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [search, setSearch] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
@@ -32,13 +34,24 @@ const UserManagement: React.FC = () => {
         }
 
         fetchUsers();
-    }, [isAdmin, navigate, page, search]);
+    }, [isAdmin, navigate, page, searchQuery]);
+
+    const handleSearch = () => {
+        setSearchQuery(searchInput);
+        setPage(1);
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
             const response = await axios.get(`${API_BASE_URL}/admin/users`, {
-                params: { page, limit: 20, search },
+                params: { page, limit: 20, search: searchQuery },
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(response.data.users);
@@ -99,16 +112,23 @@ const UserManagement: React.FC = () => {
 
                 {/* Search Bar */}
                 <div className="search-bar">
-                    <input
-                        type="text"
-                        placeholder="Search by email or name..."
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                            setPage(1);
-                        }}
-                        className="search-input"
-                    />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Search by email or name..."
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            className="search-input pr-12"
+                        />
+                        <button
+                            onClick={handleSearch}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-indigo-400 transition-colors"
+                            title="Search"
+                        >
+                            <Search className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
 
                 {error && <div className="error-message">{error}</div>}

@@ -19,8 +19,14 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {
         const whereClause = search
             ? {
                 [Op.or]: [
-                    { email: { [Op.iLike]: `%${search}%` } },
-                    { name: { [Op.iLike]: `%${search}%` } },
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('email')),
+                        { [Op.like]: `%${String(search).toLowerCase()}%` }
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('name')),
+                        { [Op.like]: `%${String(search).toLowerCase()}%` }
+                    ),
                 ],
             }
             : {};

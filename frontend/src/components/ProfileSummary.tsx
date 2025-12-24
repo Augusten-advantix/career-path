@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Briefcase, Award, Code } from 'lucide-react';
+import { User, Briefcase, Code, Zap, Brain, Sparkles } from 'lucide-react';
 
 interface Props {
     classification: any;
@@ -21,152 +21,133 @@ const ProfileSummary: React.FC<Props> = ({ classification }) => {
     const primarySkills = classification.primarySkills || [];
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl shadow-lg p-8 mb-6 border border-slate-200">
+        <div className="rounded-xl border border-white/10 bg-[#0A0A0A] p-5 shadow-sm">
             {/* Header */}
-            <div className="mb-8 pb-6 border-b border-slate-200">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-2 flex items-center">
-                    <div className="p-2.5 bg-blue-600 rounded-lg mr-3">
-                        <User className="w-6 h-6 text-white" />
+            <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-4">
+                <div>
+                    <h2 className="mb-1 flex items-center gap-2.5 text-base font-semibold text-white">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                            <User className="h-4 w-4 text-slate-300" />
+                        </div>
+                        Profile Overview
+                    </h2>
+                    <p className="text-xs text-slate-500 pl-9.5">Professional snapshot & analysis</p>
+                </div>
+                <div className="hidden sm:block">
+                    <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-slate-400">
+                        AI Analysis
                     </div>
-                    Profile Overview
-                </h2>
-                <p className="text-slate-600">Your professional profile snapshot</p>
-            </div>
-
-            {/* Current Role Info - Highlighted Card */}
-            <div className="mb-8 p-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-white shadow-md">
-                <p className="text-sm font-semibold opacity-90 uppercase tracking-wide mb-2">Current Role</p>
-                <h3 className="text-3xl font-bold">{currentRole}</h3>
-                {classification.personalInfo?.location && (
-                    <p className="text-blue-100 mt-2">📍 {classification.personalInfo.location}</p>
-                )}
-            </div>
-
-            {/* Experience & Primary Skills */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                {/* Experience Badge */}
-                <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
-                    <p className="text-sm font-semibold text-amber-900 uppercase tracking-wide mb-2">Experience</p>
-                    <p className="text-3xl font-bold text-amber-600">{yearsOfExperience}</p>
-                    <p className="text-sm text-amber-700">{yearsOfExperience === 1 ? 'year' : 'years'} in the field</p>
-                </div>
-
-                {/* Total Skills Count */}
-                <div className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl border border-emerald-200">
-                    <p className="text-sm font-semibold text-emerald-900 uppercase tracking-wide mb-2">Skills</p>
-                    <p className="text-3xl font-bold text-emerald-600">{totalSkills}</p>
-                    <p className="text-sm text-emerald-700">professional competencies</p>
                 </div>
             </div>
 
-            {/* Primary Skills - Highlighted Section */}
+            {/* Main Stats Grid */}
+            <div className="mb-5 grid gap-4 grid-cols-1 md:grid-cols-2">
+                {/* Current Role Card */}
+                <div className="group overflow-hidden rounded-lg border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-colors">
+                    <div className="mb-2.5 flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-slate-500" />
+                        <span className="text-xs font-medium uppercase tracking-wider text-slate-500">Current Role</span>
+                    </div>
+                    <h3 className="text-lg font-medium text-white mb-1">{currentRole}</h3>
+                    {classification.personalInfo?.location && (
+                        <p className="text-sm text-slate-500">{classification.personalInfo.location}</p>
+                    )}
+                </div>
+
+                {/* Experience & Skills Summary */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-colors">
+                        <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-slate-500">Experience</span>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="text-xl font-medium text-white">{yearsOfExperience}</span>
+                            <span className="text-sm text-slate-500">years</span>
+                        </div>
+                    </div>
+                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-colors">
+                        <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-slate-500">Skills</span>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="text-xl font-medium text-white">{totalSkills}</span>
+                            <span className="text-sm text-slate-500">total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Top Competencies */}
             {primarySkills.length > 0 && (
                 <div className="mb-8">
-                    <h4 className="font-bold text-slate-800 mb-3 uppercase tracking-wider text-sm flex items-center">
-                        <span className="w-1 h-6 bg-blue-600 mr-2 rounded"></span>
-                        Top Competencies
+                    <h4 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Key Competencies
                     </h4>
                     <div className="flex flex-wrap gap-2">
                         {primarySkills.map((skill: string, idx: number) => (
                             <span
                                 key={idx}
-                                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold rounded-full shadow-md hover:shadow-lg transition-shadow"
+                                className="rounded px-2.5 py-1 text-xs font-medium text-indigo-200 bg-indigo-500/10 border border-indigo-500/20"
                             >
-                                ✨ {skill}
+                                {skill}
                             </span>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Stats Grid - Enhanced */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="p-5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl border border-blue-200 hover:shadow-md transition-shadow">
-                    <Code className="w-7 h-7 text-blue-600 mb-2" />
-                    <div className="text-3xl font-bold text-blue-900">{totalSkills}</div>
-                    <div className="text-xs font-semibold text-blue-700 uppercase tracking-wide mt-1">Total Skills</div>
-                </div>
-                <div className="p-5 bg-gradient-to-br from-green-100 to-green-50 rounded-xl border border-green-200 hover:shadow-md transition-shadow">
-                    <Code className="w-7 h-7 text-green-600 mb-2" />
-                    <div className="text-3xl font-bold text-green-900">{skills.technical?.length || 0}</div>
-                    <div className="text-xs font-semibold text-green-700 uppercase tracking-wide mt-1">Technical</div>
-                </div>
-                <div className="p-5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl border border-purple-200 hover:shadow-md transition-shadow">
-                    <Award className="w-7 h-7 text-purple-600 mb-2" />
-                    <div className="text-3xl font-bold text-purple-900">{skills.soft?.length || 0}</div>
-                    <div className="text-xs font-semibold text-purple-700 uppercase tracking-wide mt-1">Soft Skills</div>
-                </div>
-                <div className="p-5 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl border border-orange-200 hover:shadow-md transition-shadow">
-                    <Briefcase className="w-7 h-7 text-orange-600 mb-2" />
-                    <div className="text-3xl font-bold text-orange-900">{skills.domain?.length || 0}</div>
-                    <div className="text-xs font-semibold text-orange-700 uppercase tracking-wide mt-1">Domain Areas</div>
-                </div>
-            </div>
-
-            {/* Skills Breakdown - Styled Sections */}
-            <div className="space-y-6">
-                {(skills.technical?.length || 0) > 0 && (
-                    <div className="bg-white p-5 rounded-xl border border-green-100 shadow-sm">
-                        <h4 className="font-bold text-slate-800 mb-3 flex items-center">
-                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                            Technical Skills <span className="ml-2 text-sm font-semibold text-green-600">({skills.technical.length})</span>
+            {/* Detailed Skills Breakdown */}
+            <div className="grid gap-6 md:grid-cols-3 border-t border-white/5 pt-6">
+                {/* Technical Skills */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <h4 className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                            <Code className="h-3.5 w-3.5 text-slate-500" />
+                            Technical
                         </h4>
-                        <div className="flex flex-wrap gap-2">
-                            {skills.technical.slice(0, 12).map((skill: any, idx: number) => (
-                                <span key={idx} className="px-3 py-1.5 bg-green-100 text-green-800 text-sm font-medium rounded-full hover:bg-green-200 transition-colors">
-                                    {skill.name}
-                                </span>
-                            ))}
-                            {skills.technical.length > 12 && (
-                                <span className="px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-semibold rounded-full">
-                                    +{skills.technical.length - 12} more
-                                </span>
-                            )}
-                        </div>
+                        <span className="text-xs text-slate-600 font-mono">{skills.technical?.length || 0}</span>
                     </div>
-                )}
+                    <div className="flex flex-wrap gap-1.5">
+                        {skills.technical?.slice(0, 8).map((skill: any, idx: number) => (
+                            <span key={idx} className="rounded bg-white/5 px-1.5 py-0.5 text-[11px] text-slate-400 border border-white/5">
+                                {skill.name}
+                            </span>
+                        ))}
+                    </div>
+                </div>
 
-                {(skills.soft?.length || 0) > 0 && (
-                    <div className="bg-white p-5 rounded-xl border border-purple-100 shadow-sm">
-                        <h4 className="font-bold text-slate-800 mb-3 flex items-center">
-                            <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                            Soft Skills <span className="ml-2 text-sm font-semibold text-purple-600">({skills.soft.length})</span>
+                {/* Soft Skills */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <h4 className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                            <Brain className="h-3.5 w-3.5 text-slate-500" />
+                            Soft Skills
                         </h4>
-                        <div className="flex flex-wrap gap-2">
-                            {skills.soft.slice(0, 10).map((skill: any, idx: number) => (
-                                <span key={idx} className="px-3 py-1.5 bg-purple-100 text-purple-800 text-sm font-medium rounded-full hover:bg-purple-200 transition-colors">
-                                    {skill.name}
-                                </span>
-                            ))}
-                            {skills.soft.length > 10 && (
-                                <span className="px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-semibold rounded-full">
-                                    +{skills.soft.length - 10} more
-                                </span>
-                            )}
-                        </div>
+                        <span className="text-xs text-slate-600 font-mono">{skills.soft?.length || 0}</span>
                     </div>
-                )}
+                    <div className="flex flex-wrap gap-1.5">
+                        {skills.soft?.slice(0, 8).map((skill: any, idx: number) => (
+                            <span key={idx} className="rounded bg-white/5 px-1.5 py-0.5 text-[11px] text-slate-400 border border-white/5">
+                                {skill.name}
+                            </span>
+                        ))}
+                    </div>
+                </div>
 
-                {(skills.domain?.length || 0) > 0 && (
-                    <div className="bg-white p-5 rounded-xl border border-orange-100 shadow-sm">
-                        <h4 className="font-bold text-slate-800 mb-3 flex items-center">
-                            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                            Domain Expertise <span className="ml-2 text-sm font-semibold text-orange-600">({skills.domain.length})</span>
+                {/* Domain Skills */}
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                        <h4 className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                            <Zap className="h-3.5 w-3.5 text-slate-500" />
+                            Domain
                         </h4>
-                        <div className="flex flex-wrap gap-2">
-                            {skills.domain.slice(0, 10).map((skill: any, idx: number) => (
-                                <span key={idx} className="px-3 py-1.5 bg-orange-100 text-orange-800 text-sm font-medium rounded-full hover:bg-orange-200 transition-colors">
-                                    {skill.name}
-                                </span>
-                            ))}
-                            {skills.domain.length > 10 && (
-                                <span className="px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-semibold rounded-full">
-                                    +{skills.domain.length - 10} more
-                                </span>
-                            )}
-                        </div>
+                        <span className="text-xs text-slate-600 font-mono">{skills.domain?.length || 0}</span>
                     </div>
-                )}
+                    <div className="flex flex-wrap gap-1.5">
+                        {skills.domain?.slice(0, 8).map((skill: any, idx: number) => (
+                            <span key={idx} className="rounded bg-white/5 px-1.5 py-0.5 text-[11px] text-slate-400 border border-white/5">
+                                {skill.name}
+                            </span>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
