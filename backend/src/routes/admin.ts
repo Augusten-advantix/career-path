@@ -27,6 +27,7 @@ router.post('/jobs/:id/retry', adminController.retryFailedJob);
 
 // System Statistics
 router.get('/dashboard/stats', adminController.getDashboardStats);
+router.get('/dashboard/engagement', adminController.getEngagementStats);
 
 // Analytics
 router.get('/analytics', adminController.getAnalytics);

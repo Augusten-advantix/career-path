@@ -1,37 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config';
-import { Users, FileText, Activity, TrendingUp, CheckCircle, XCircle, Clock, ArrowRight, RefreshCw } from 'lucide-react';
+import { Users, Target, MessageSquare, TrendingUp, Activity } from 'lucide-react';
 
-interface DashboardStats {
-    users: {
-        total: number;
-        admin: number;
-        regular: number;
-        recentlyAdded: number;
+interface EngagementStats {
+    activeUsers: {
+        dau: number;
+        wau: number;
+        mau: number;
+        stickiness: string;
     };
-    profiles: {
-        total: number;
-        recentlyAdded: number;
+    roadmapEngagement: {
+        totalRoadmaps: number;
+        activeRoadmaps: number;
+        highEngagement: number;
+        avgCompletionRate: number;
     };
-    jobs: {
-        total: number;
-        queued: number;
-        running: number;
-        success: number;
-        failed: number;
-        successRate: string;
+    conversations: {
+        avgQuestions: number;
+        completionRate: number;
+        totalCompleted: number;
     };
-    recentActivity: any[];
+    activityTrend: Array<{
+        date: string;
+        activeUsers: number;
+    }>;
 }
 
 const AdminDashboard: React.FC = () => {
     const { token, isAdmin } = useAuth();
     const navigate = useNavigate();
-    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [stats, setStats] = useState<EngagementStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -41,17 +43,17 @@ const AdminDashboard: React.FC = () => {
             return;
         }
         fetchStats();
-    }, [isAdmin, navigate]);
+    }, [isAdmin, navigate, token]);
 
     const fetchStats = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${API_BASE_URL}/admin/dashboard/stats`, {
+            const response = await axios.get(`${API_BASE_URL}/admin/dashboard/engagement`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setStats(response.data);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch statistics');
+            setError(err.response?.data?.message || 'Failed to fetch engagement statistics');
         } finally {
             setLoading(false);
         }
@@ -79,194 +81,171 @@ const AdminDashboard: React.FC = () => {
 
     if (!stats) return null;
 
-    const statCards = [
-        {
-            title: 'Total Users',
-            value: stats.users.total,
-            subtitle: `${stats.users.admin} admin · ${stats.users.regular} regular`,
-            badge: `+${stats.users.recentlyAdded} this week`,
-            icon: Users,
-            color: 'from-blue-500 to-blue-600',
-            bgColor: 'bg-blue-500/10',
-            link: '/admin/users'
-        },
-        {
-            title: 'Profiles',
-            value: stats.profiles.total,
-            subtitle: 'Resume profiles uploaded',
-            badge: `+${stats.profiles.recentlyAdded} this week`,
-            icon: FileText,
-            color: 'from-purple-500 to-purple-600',
-            bgColor: 'bg-purple-500/10',
-            link: '/admin/profiles'
-        },
-        {
-            title: 'Analysis Jobs',
-            value: stats.jobs.total,
-            subtitle: `${stats.jobs.successRate}% success rate`,
-            badge: `${stats.jobs.running} running`,
-            icon: Activity,
-            color: 'from-emerald-500 to-emerald-600',
-            bgColor: 'bg-emerald-500/10',
-            link: '/admin/jobs'
-        },
-        {
-            title: 'Performance',
-            value: `${stats.jobs.successRate}%`,
-            subtitle: 'Overall success rate',
-            badge: `${stats.jobs.success} completed`,
-            icon: TrendingUp,
-            color: 'from-amber-500 to-orange-500',
-            bgColor: 'bg-amber-500/10',
-            link: '/admin/analytics'
-        },
-    ];
-
     return (
         <AdminLayout>
             <div className="space-y-6">
-                {/* Welcome Section */}
-                <div className="flex items-center justify-between">
+                {/* Page Header */}
+                <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-semibold text-white tracking-tight">Welcome back</h1>
-                        <p className="text-slate-400 mt-1 text-sm">Here's what's happening with your platform today</p>
+                        <h1 className="text-2xl font-semibold text-white tracking-tight">User Engagement Dashboard</h1>
+                        <p className="text-slate-400 text-sm mt-1">Monitor platform adoption and user success metrics</p>
                     </div>
                     <button
                         onClick={fetchStats}
-                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 rounded-lg transition-all text-sm font-medium"
+                        className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 rounded-lg transition-all flex items-center gap-2 text-sm"
                     >
-                        <RefreshCw className="w-4 h-4" />
+                        <Activity className="w-4 h-4" />
                         Refresh
                     </button>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {statCards.map((card, idx) => {
-                        const Icon = card.icon;
-                        return (
-                            <Link
-                                key={idx}
-                                to={card.link}
-                                className="group bg-[#0A0A0A] border border-white/5 rounded-lg p-4 hover:border-white/10 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10"
-                            >
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className={`p-2.5 rounded-lg ${card.bgColor}`}>
-                                        <Icon className={`w-5 h-5 text-white`} />
-                                    </div>
-                                    <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">
-                                        {card.badge}
-                                    </span>
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-3xl font-bold text-white">{card.value}</h3>
-                                    <p className="text-sm font-medium text-slate-300">{card.title}</p>
-                                    <p className="text-xs text-slate-500">{card.subtitle}</p>
-                                </div>
-                                <div className="mt-4 flex items-center text-xs text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    View details <ArrowRight className="w-3 h-3 ml-1" />
-                                </div>
-                            </Link>
-                        );
-                    })}
+                {/* Active Users - Top Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5 hover:border-white/10 transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                                <Users className="w-5 h-5 text-indigo-400" />
+                            </div>
+                            <span className="text-xs text-slate-500 uppercase tracking-wider">Daily</span>
+                        </div>
+                        <div className="text-3xl font-bold text-white mb-1">{stats.activeUsers.dau}</div>
+                        <p className="text-sm text-slate-400">Active Users (24h)</p>
+                    </div>
+
+                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5 hover:border-white/10 transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                                <Users className="w-5 h-5 text-purple-400" />
+                            </div>
+                            <span className="text-xs text-slate-500 uppercase tracking-wider">Weekly</span>
+                        </div>
+                        <div className="text-3xl font-bold text-white mb-1">{stats.activeUsers.wau}</div>
+                        <p className="text-sm text-slate-400">Active Users (7d)</p>
+                    </div>
+
+                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-5 hover:border-white/10 transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                                <Users className="w-5 h-5 text-emerald-400" />
+                            </div>
+                            <span className="text-xs text-slate-500 uppercase tracking-wider">Monthly</span>
+                        </div>
+                        <div className="text-3xl font-bold text-white mb-1">{stats.activeUsers.mau}</div>
+                        <p className="text-sm text-slate-400">Active Users (30d)</p>
+                        <div className="mt-2 pt-2 border-t border-white/5">
+                            <p className="text-xs text-slate-500">
+                                Stickiness: <span className="text-indigo-400 font-medium">{stats.activeUsers.stickiness}%</span>
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Job Status + Recent Activity */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Job Status Breakdown */}
-                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-4 shadow-lg shadow-black/20">
-                        <h2 className="text-lg font-semibold text-white mb-4">Job Status</h2>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-yellow-400 rounded-full" />
-                                    <span className="text-slate-300">Queued</span>
-                                </div>
-                                <span className="text-white font-semibold">{stats.jobs.queued}</span>
+                {/* Roadmap Engagement Card */}
+                <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="p-2 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                            <Target className="w-5 h-5 text-orange-400" />
+                        </div>
+                        <h2 className="text-lg font-semibold text-white">Roadmap Engagement</h2>
+                    </div>
+
+                    {/* Average Completion Rate */}
+                    <div className="mb-6">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-slate-400">Average Completion Rate</span>
+                            <span className="text-2xl font-bold text-white">{stats.roadmapEngagement.avgCompletionRate}%</span>
+                        </div>
+                        <div className="w-full bg-white/5 rounded-full h-3">
+                            <div
+                                className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                                style={{ width: `${stats.roadmapEngagement.avgCompletionRate}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-white/5 rounded-lg border border-white/5">
+                            <div className="text-2xl font-bold text-white mb-1">
+                                {stats.roadmapEngagement.totalRoadmaps}
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                                    <span className="text-slate-300">Running</span>
-                                </div>
-                                <span className="text-white font-semibold">{stats.jobs.running}</span>
+                            <p className="text-xs text-slate-500 uppercase tracking-wider">Total Roadmaps</p>
+                        </div>
+                        <div className="text-center p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                            <div className="text-2xl font-bold text-emerald-400 mb-1">
+                                {stats.roadmapEngagement.activeRoadmaps}
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <CheckCircle className="w-4 h-4 text-emerald-400" />
-                                    <span className="text-slate-300">Success</span>
-                                </div>
-                                <span className="text-emerald-400 font-semibold">{stats.jobs.success}</span>
+                            <p className="text-xs text-slate-500 uppercase tracking-wider">Active (7d)</p>
+                        </div>
+                        <div className="text-center p-4 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
+                            <div className="text-2xl font-bold text-indigo-400 mb-1">
+                                {stats.roadmapEngagement.highEngagement}
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <XCircle className="w-4 h-4 text-red-400" />
-                                    <span className="text-slate-300">Failed</span>
-                                </div>
-                                <span className="text-red-400 font-semibold">{stats.jobs.failed}</span>
+                            <p className="text-xs text-slate-500 uppercase tracking-wider">High Engagement (&gt;50%)</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Row: Conversations & Activity Trend */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Conversation Analytics */}
+                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-6">
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                                <MessageSquare className="w-5 h-5 text-blue-400" />
+                            </div>
+                            <h2 className="text-lg font-semibold text-white">Conversation Analytics</h2>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                                <span className="text-sm text-slate-400">Avg Questions</span>
+                                <span className="text-xl font-bold text-white">{stats.conversations.avgQuestions}</span>
+                            </div>
+                            <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                                <span className="text-sm text-slate-400">Completion Rate</span>
+                                <span className="text-xl font-bold text-emerald-400">{stats.conversations.completionRate}%</span>
+                            </div>
+                            <div className="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/5">
+                                <span className="text-sm text-slate-400">Total Completed</span>
+                                <span className="text-xl font-bold text-white">{stats.conversations.totalCompleted}</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Recent Activity */}
-                    <div className="lg:col-span-2 bg-[#0A0A0A] border border-white/5 rounded-lg p-4 shadow-lg shadow-black/20">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold text-white">Recent Activity</h2>
-                            <Link to="/admin/jobs" className="text-xs text-indigo-400 hover:text-indigo-300">
-                                View all →
-                            </Link>
-                        </div>
-                        {stats.recentActivity.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-12 text-slate-500">
-                                <Clock className="w-10 h-10 mb-3 opacity-50" />
-                                <p>No recent activity</p>
+                    {/* 7-Day Activity Trend */}
+                    <div className="bg-[#0A0A0A] border border-white/5 rounded-lg p-6">
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="p-2 bg-pink-500/10 border border-pink-500/20 rounded-lg">
+                                <TrendingUp className="w-5 h-5 text-pink-400" />
                             </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {stats.recentActivity.slice(0, 5).map((activity: any) => (
-                                    <div key={activity.id} className="flex items-center gap-4 p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition-colors">
-                                        <div className={`w-9 h-9 rounded-full flex items-center justify-center ${activity.status === 'success' ? 'bg-emerald-500/20' :
-                                            activity.status === 'failed' ? 'bg-red-500/20' :
-                                                activity.status === 'running' ? 'bg-blue-500/20' : 'bg-slate-500/20'
-                                            }`}>
-                                            {activity.status === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> :
-                                                activity.status === 'failed' ? <XCircle className="w-4 h-4 text-red-400" /> :
-                                                    <Clock className="w-4 h-4 text-blue-400" />}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm text-white truncate">
-                                                Analysis for <span className="font-medium">{activity.Profile?.name || 'Unknown'}</span>
-                                            </p>
-                                            <p className="text-xs text-slate-500 truncate">
-                                                {activity.Profile?.title || 'No title'} · {new Date(activity.createdAt).toLocaleString()}
-                                            </p>
-                                        </div>
-                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${activity.status === 'success' ? 'bg-emerald-500/10 text-emerald-400' :
-                                            activity.status === 'failed' ? 'bg-red-500/10 text-red-400' :
-                                                'bg-blue-500/10 text-blue-400'
-                                            }`}>
-                                            {activity.status}
+                            <h2 className="text-lg font-semibold text-white">7-Day Activity Trend</h2>
+                        </div>
+
+                        <div className="space-y-2">
+                            {stats.activityTrend.map((day, idx) => {
+                                const maxUsers = Math.max(...stats.activityTrend.map(d => d.activeUsers));
+                                const widthPercent = maxUsers > 0 ? (day.activeUsers / maxUsers) * 100 : 0;
+
+                                return (
+                                    <div key={idx} className="flex items-center gap-3">
+                                        <span className="text-xs text-slate-500 w-16">
+                                            {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                         </span>
+                                        <div className="flex-1 bg-white/5 rounded-full h-6 relative">
+                                            <div
+                                                className="bg-gradient-to-r from-pink-500 to-purple-500 h-6 rounded-full transition-all duration-300 flex items-center justify-end pr-2"
+                                                style={{ width: `${widthPercent}%` }}
+                                            >
+                                                {day.activeUsers > 0 && (
+                                                    <span className="text-xs font-medium text-white">{day.activeUsers}</span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="bg-indigo-950/20 border border-indigo-500/20 rounded-lg p-5">
-                    <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
-                    <div className="flex flex-wrap gap-3">
-                        <Link to="/admin/analytics" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">
-                            View Analytics →
-                        </Link>
-                        <Link to="/admin/users" className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
-                            Manage Users
-                        </Link>
-                        <Link to="/admin/profiles" className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
-                            View Profiles
-                        </Link>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>

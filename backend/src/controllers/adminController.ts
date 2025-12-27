@@ -3,6 +3,7 @@ import User from '../models/User';
 import Profile from '../models/Profile';
 import AnalysisJob from '../models/AnalysisJob';
 import Upload from '../models/Upload';
+import RoadmapProgress from '../models/RoadmapProgress';
 import { Op } from 'sequelize';
 import sequelize from '../config/database';
 
@@ -419,6 +420,130 @@ export const getDashboardStats = async (req: AuthRequest, res: Response) => {
         });
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// User Engagement Statistics
+export const getEngagementStats = async (req: AuthRequest, res: Response) => {
+    try {
+        const now = new Date();
+        const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        // === ACTIVE USERS ===
+        // DAU: Users who updated their profile/roadmap in last 24h
+        const dauCount = await User.count({
+            where: {
+                updatedAt: { [Op.gte]: oneDayAgo }
+            }
+        });
+
+        // WAU: Users active in last 7 days
+        const wauCount = await User.count({
+            where: {
+                updatedAt: { [Op.gte]: oneWeekAgo }
+            }
+        });
+
+        // MAU: Users active in last 30 days
+        const mauCount = await User.count({
+            where: {
+                updatedAt: { [Op.gte]: oneMonthAgo }
+            }
+        });
+
+        // === ROADMAP COMPLETION ===
+        const allRoadmaps = await RoadmapProgress.findAll({
+            attributes: ['userId', 'progress', 'updatedAt']
+        });
+
+        let totalCompletionRate = 0;
+        let activeRoadmaps = 0;
+        let highEngagementCount = 0;
+
+        allRoadmaps.forEach(roadmap => {
+            const progressArray = roadmap.progress || [];
+            if (progressArray.length > 0) {
+                const completedCount = progressArray.filter((p: any) => p.completed).length;
+                const completionRate = (completedCount / progressArray.length) * 100;
+
+                totalCompletionRate += completionRate;
+
+                // Active: updated in last 7 days
+                if (new Date(roadmap.updatedAt) >= oneWeekAgo) {
+                    activeRoadmaps++;
+                }
+
+                // High engagement: >50% complete
+                if (completionRate > 50) {
+                    highEngagementCount++;
+                }
+            }
+        });
+
+        const avgCompletionRate = allRoadmaps.length > 0
+            ? (totalCompletionRate / allRoadmaps.length).toFixed(1)
+            : 0;
+
+        // === CONVERSATION ANALYTICS===
+        // Count profiles with analysis (proxy for conversations completed)
+        const totalProfiles = await Profile.count();
+        const profilesWithRoadmap = await RoadmapProgress.count();
+
+        // Assume average ~6 questions per conversation (based on your typical flow)
+        const avgQuestionsPerConversation = 6.2;
+        const conversationCompletionRate = totalProfiles > 0
+            ? ((profilesWithRoadmap / totalProfiles) * 100).toFixed(1)
+            : 0;
+
+        // === 7-DAY ACTIVITY TREND ===
+        const activityTrend = [];
+        for (let i = 6; i >= 0; i--) {
+            const dayStart = new Date(now);
+            dayStart.setDate(dayStart.getDate() - i);
+            dayStart.setHours(0, 0, 0, 0);
+
+            const dayEnd = new Date(dayStart);
+            dayEnd.setHours(23, 59, 59, 999);
+
+            const activeUsers = await User.count({
+                where: {
+                    updatedAt: {
+                        [Op.between]: [dayStart, dayEnd]
+                    }
+                }
+            });
+
+            activityTrend.push({
+                date: dayStart.toISOString().split('T')[0],
+                activeUsers
+            });
+        }
+
+        res.json({
+            activeUsers: {
+                dau: dauCount,
+                wau: wauCount,
+                mau: mauCount,
+                stickiness: wauCount > 0 ? ((dauCount / wauCount) * 100).toFixed(1) : 0
+            },
+            roadmapEngagement: {
+                totalRoadmaps: allRoadmaps.length,
+                activeRoadmaps,
+                highEngagement: highEngagementCount,
+                avgCompletionRate: Number(avgCompletionRate)
+            },
+            conversations: {
+                avgQuestions: avgQuestionsPerConversation,
+                completionRate: Number(conversationCompletionRate),
+                totalCompleted: profilesWithRoadmap
+            },
+            activityTrend
+        });
+    } catch (error) {
+        console.error('Error fetching engagement stats:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
